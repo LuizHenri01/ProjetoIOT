@@ -15,8 +15,25 @@
         <p id="status-conexao" role="status" aria-live="polite">
             Verificando conexão com o servidor...
         </p>
+
+        <section aria-label="Captura de foto do quadro">
+
+            <label for="input-foto" class="botao-grande">
+                Tirar foto do quadro
+            </label>
+            <input
+                type="file"
+                id="input-foto"
+                accept="image/*"
+                capture="environment"
+                class="input-oculto"
+            >
+        </section>
+
+        <p id="status-foto" role="status" aria-live="polite"></p>
     </main>
 
     <script src="{{ url_for('static', filename='js/conexao.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/fotos.js') }}"></script>
 </body>
 </html>
