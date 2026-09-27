@@ -22,3 +22,36 @@ h1 {
     outline: 3px solid var(--cor-destaque);
     outline-offset: 2px;
 }
+
+.botao-grande {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+    color: #ffffff;
+    background: var(--cor-destaque, #0b5fff);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    min-height: 64px;
+}
+
+.botao-grande:focus-visible {
+    outline: 4px solid #000000;
+    outline-offset: 3px;
+}
+
+.input-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
