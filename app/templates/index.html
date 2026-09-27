@@ -12,7 +12,11 @@
     </header>
 
     <main>
-        <p role="status">Conexão estabelecida com o servidor.</p>
+        <p id="status-conexao" role="status" aria-live="polite">
+            Verificando conexão com o servidor...
+        </p>
     </main>
+
+    <script src="{{ url_for('static', filename='js/conexao.js') }}"></script>
 </body>
 </html>
