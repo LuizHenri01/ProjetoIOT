@@ -1,13 +1,15 @@
 import qrcode
 from app import create_app
 from app.utils import obter_ip_local
+from app.certificado import garantir_certificado
 
 app = create_app()
 
 if __name__ == "__main__":
     PORTA = 8000
     ip = obter_ip_local()
-    url = f"http://{ip}:{PORTA}"
+    cert, chave = garantir_certificado(ip)
+    url = f"https://{ip}:{PORTA}"
 
     print("\n" + "=" * 50)
     print(f"  Servidor disponível em: {url}")
@@ -19,4 +21,4 @@ if __name__ == "__main__":
 
     print("=" * 50 + "\n")
 
-    app.run(host="0.0.0.0", port=PORTA, debug=True) # tudo zero para aceitar conexões de qualquer IP, inclusive de outros dispositivos na rede local.
+    app.run(host="0.0.0.0", port=PORTA, debug=True, ssl_context=(cert, chave)) # tudo zero para aceitar conexões de qualquer IP, inclusive de outros dispositivos na rede local.
