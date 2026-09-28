@@ -31,9 +31,18 @@
         </section>
 
         <p id="status-foto" role="status" aria-live="polite"></p>
+
+                <section aria-label="Teste do microfone">
+            <button type="button" id="botao-mic" class="botao-grande">
+                Testar microfone
+            </button>
+        </section>
+
+        <p id="status-mic" role="status" aria-live="polite"></p>
     </main>
 
     <script src="{{ url_for('static', filename='js/conexao.js') }}"></script>
     <script src="{{ url_for('static', filename='js/fotos.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/microfone.js') }}"></script>
 </body>
 </html>
