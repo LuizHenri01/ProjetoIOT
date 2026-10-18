@@ -4,6 +4,7 @@ const caixaTela = document.getElementById("cfg-tela-ligada");
 const statusConfig = document.getElementById("status-config");
 const botaoNotificacoes = document.getElementById("botao-notificacoes");
 const statusNotificacoes = document.getElementById("status-notificacoes");
+const botaoTesteNotificacoes = document.getElementById("botao-teste-notificacoes");
 
 async function prepararNotificacoes() {
     if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
@@ -12,6 +13,9 @@ async function prepararNotificacoes() {
         return;
     }
     try {
+        if (!window.isSecureContext) {
+            throw new Error("Notificações precisam de HTTPS com certificado confiável neste aparelho.");
+        }
         const registro = await navigator.serviceWorker.register("/sw.js");
         const inscricao = await registro.pushManager.getSubscription();
         if (inscricao && Notification.permission === "granted") {
@@ -22,11 +26,16 @@ async function prepararNotificacoes() {
             });
             if (!resposta.ok) throw new Error("Não foi possível atualizar este aparelho no servidor.");
             botaoNotificacoes.textContent = "Desativar notificações neste aparelho";
+            botaoTesteNotificacoes.hidden = false;
             statusNotificacoes.textContent = "Notificações ativadas neste aparelho.";
+        } else if (Notification.permission === "denied") {
+            statusNotificacoes.textContent = "Notificações bloqueadas nas permissões deste navegador.";
+        } else {
+            statusNotificacoes.textContent = "Notificações desativadas neste aparelho. Toque no botão para ativar.";
         }
     } catch (erro) {
-        botaoNotificacoes.disabled = true;
-        statusNotificacoes.textContent = "Notificações precisam de uma conexão segura (HTTPS).";
+        botaoNotificacoes.disabled = !window.isSecureContext;
+        statusNotificacoes.textContent = erro.message || "Não foi possível preparar as notificações neste navegador.";
     }
 }
 
@@ -52,11 +61,13 @@ botaoNotificacoes.addEventListener("click", async () => {
             if (!resposta.ok) throw new Error("Não foi possível desativar as notificações no servidor.");
             await existente.unsubscribe();
             botaoNotificacoes.textContent = "Ativar notificações neste aparelho";
+            botaoTesteNotificacoes.hidden = true;
             statusNotificacoes.textContent = "Notificações desativadas neste aparelho.";
             return;
         }
         if (vaiDesativar) {
             botaoNotificacoes.textContent = "Ativar notificações neste aparelho";
+            botaoTesteNotificacoes.hidden = true;
             statusNotificacoes.textContent = "Este aparelho não tem uma inscrição ativa.";
             return;
         }
@@ -77,14 +88,31 @@ botaoNotificacoes.addEventListener("click", async () => {
         });
         if (!resposta.ok) {
             await inscricao.unsubscribe();
-            throw new Error("Não foi possível salvar a inscrição no servidor.");
+            const erro = await resposta.json().catch(() => ({}));
+            throw new Error(erro.erro || "Não foi possível salvar a inscrição no servidor.");
         }
         botaoNotificacoes.textContent = "Desativar notificações neste aparelho";
+        botaoTesteNotificacoes.hidden = false;
         statusNotificacoes.textContent = "Notificações ativadas neste aparelho.";
     } catch (erro) {
         statusNotificacoes.textContent = erro.message || "Não foi possível ativar as notificações.";
     } finally {
         botaoNotificacoes.disabled = false;
+    }
+});
+
+botaoTesteNotificacoes.addEventListener("click", async () => {
+    botaoTesteNotificacoes.disabled = true;
+    statusNotificacoes.textContent = "Enviando notificação de teste aos aparelhos inscritos...";
+    try {
+        const resposta = await AulaMais.api("/api/notificacoes/teste", { method: "POST" });
+        const dados = await resposta.json();
+        if (!resposta.ok) throw new Error(dados.erro || "O servidor não aceitou a notificação de teste.");
+        statusNotificacoes.textContent = `Push aceito para ${dados.enviadas} aparelho(s). Confira a central de notificações.`;
+    } catch (erro) {
+        statusNotificacoes.textContent = erro.message || "Não foi possível enviar a notificação de teste.";
+    } finally {
+        botaoTesteNotificacoes.disabled = false;
     }
 });
 

@@ -1,5 +1,15 @@
-import qrcode
 import os
+import sys
+from pathlib import Path
+
+# O comando documentado `python run.py` usa o ambiente virtual do projeto,
+# inclusive quando o Python global está selecionado no terminal/IDE.
+if __name__ == "__main__":
+    python_venv = Path(__file__).resolve().parent / ".venv" / "Scripts" / "python.exe"
+    if python_venv.is_file() and Path(sys.executable).resolve() != python_venv.resolve():
+        os.execv(str(python_venv), [str(python_venv), str(Path(__file__).resolve()), *sys.argv[1:]])
+
+import qrcode
 import threading
 import time
 from app import create_app
@@ -7,6 +17,7 @@ from app.utils import obter_ip_local
 from app.certificado import garantir_certificado
 
 app = create_app()
+DEBUG = os.environ.get("AULAMAIS_DEBUG", "").strip().lower() in {"1", "true", "yes"}
 
 if __name__ == "__main__":
     def acompanhar_fins_programados():
@@ -19,8 +30,8 @@ if __name__ == "__main__":
                 app.logger.exception("Falha ao conferir o encerramento programado das aulas")
             time.sleep(20)
 
-    # O reloader do Flask inicia um processo filho; apenas ele mantém o monitor.
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    # Com o reloader ligado, apenas o processo filho mantém o monitor.
+    if not DEBUG or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         threading.Thread(
             target=acompanhar_fins_programados,
             name="aulamais-encerramento-aulas",
@@ -42,4 +53,7 @@ if __name__ == "__main__":
 
     print("=" * 50 + "\n")
 
-    app.run(host="0.0.0.0", port=PORTA, debug=True, ssl_context=(cert, chave)) # tudo zero para aceitar conexões de qualquer IP, inclusive de outros dispositivos na rede local.
+    app.run(
+        host="0.0.0.0", port=PORTA, debug=DEBUG, use_reloader=DEBUG,
+        ssl_context=(cert, chave),
+    )

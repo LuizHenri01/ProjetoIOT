@@ -11,20 +11,15 @@
                     <p>Receba avisos quando uma aula começar, terminar ou uma foto for salva. Ative em cada aparelho que deseja usar.</p>
                     <button type="button" class="btn-nova" id="botao-notificacoes">Ativar notificações neste aparelho</button>
                     <p id="status-notificacoes" class="estado" role="status" aria-live="polite"></p>
+                    <button type="button" class="btn-nova" id="botao-teste-notificacoes" hidden>Enviar notificação de teste</button>
                     <hr>
                     <h2>Preferências deste aparelho</h2>
                     <label><input type="checkbox" id="cfg-tela-ligada" checked> Manter a tela ligada durante a transcrição</label>
-                    <label for="idioma">Idioma</label>
-                    <select id="idioma">
-                        <option>Português (Brasil)</option>
-                        <option disabled>English (em breve)</option>
-                        <option disabled>Español (em breve)</option>
-                    </select>
                     <button type="submit" class="btn-nova">Salvar configurações</button>
                     <p id="status-config" class="estado" role="status" aria-live="polite"></p>
                     <p>Tamanho do texto, contraste, voz e outras opções ficam em <a href="{{ url_for('acessibilidade') }}">Acessibilidade</a>.</p>
                 </form>
             </section>
 {% endblock %}
-{% block scripts %}  <script src="{{ url_for('static', filename='js/configuracoes.js') }}"></script>
+{% block scripts %}  <script src="{{ url_for('static', filename='js/configuracoes.js', v='4') }}"></script>
 {% endblock %}

@@ -1,20 +1,21 @@
 import os
 import ipaddress
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-PASTA_CERTS = "certs"
-CAMINHO_CERT = os.path.join(PASTA_CERTS, "cert.pem")
-CAMINHO_CHAVE = os.path.join(PASTA_CERTS, "key.pem")
+PASTA_CERTS = Path(__file__).resolve().parents[1] / "certs"
+CAMINHO_CERT = PASTA_CERTS / "cert.pem"
+CAMINHO_CHAVE = PASTA_CERTS / "key.pem"
 
 
 def garantir_certificado(ip):
     if os.path.exists(CAMINHO_CERT) and os.path.exists(CAMINHO_CHAVE):
-        return CAMINHO_CERT, CAMINHO_CHAVE
+        return str(CAMINHO_CERT), str(CAMINHO_CHAVE)
 
     os.makedirs(PASTA_CERTS, exist_ok=True)
 
@@ -50,4 +51,4 @@ def garantir_certificado(ip):
     with open(CAMINHO_CERT, "wb") as f:
         f.write(certificado.public_bytes(serialization.Encoding.PEM))
 
-    return CAMINHO_CERT, CAMINHO_CHAVE
+    return str(CAMINHO_CERT), str(CAMINHO_CHAVE)

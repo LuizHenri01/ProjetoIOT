@@ -17,7 +17,8 @@ def token_csrf():
 
 def caminho_seguro(destino):
     """Só aceita caminhos internos (evita open redirect via ?proximo=)."""
-    if destino and destino.startswith("/") and not destino.startswith("//"):
+    if (destino and destino.startswith("/") and not destino.startswith(("//", "/\\"))
+            and "\\" not in destino and "\r" not in destino and "\n" not in destino):
         return destino
     return None
 

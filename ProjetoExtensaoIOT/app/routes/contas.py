@@ -52,7 +52,7 @@ def registrar_contas(app):
         _abrir_sessao(usuario_id)
         return redirect(url_for("aulas"))
 
-    @app.route("/sair")
+    @app.route("/sair", methods=["POST"])
     def sair():
         session.clear()
         return redirect(url_for("index"))

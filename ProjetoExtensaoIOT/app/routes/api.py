@@ -18,7 +18,9 @@ from app.services.transcricoes_service import (
     buscar_transcricoes, listar_transcricoes, salvar_transcricao,
 )
 from app.services.notificacoes_service import (
-    chave_publica_vapid, notificar_usuario, remover_assinatura, salvar_assinatura,
+    chave_publica_vapid, notificar_usuario, push_disponivel,
+    listar_notificacoes, marcar_notificacao_lida, marcar_todas_notificacoes_lidas,
+    remover_assinatura, salvar_assinatura,
 )
 
 TAMANHO_MAXIMO_NOME = 80
@@ -87,7 +89,9 @@ def registrar_api(app):
                 if horario_fim_previsto <= horario_inicio:
                     return jsonify({"erro": "O horário de encerramento precisa ser depois do início."}), 400
                 if materia_id and horario_fim_previsto <= datetime.now().strftime("%H:%M"):
-                    return jsonify({"erro": "O horário de término desta matéria já passou hoje."}), 400
+                    # Permite registrar uma aula fora do horário previsto; ela termina manualmente.
+                    horario_inicio = datetime.now().strftime("%H:%M")
+                    horario_fim_previsto = None
         except ValueError:
             return jsonify({"erro": "Informe horários válidos para início e término."}), 400
 
@@ -132,10 +136,29 @@ def registrar_api(app):
     @app.route("/api/notificacoes/chave", methods=["GET"])
     @login_obrigatorio
     def chave_notificacoes_route():
+        if not push_disponivel():
+            return jsonify({"erro": "Instale as dependências atualizadas e reinicie o servidor."}), 503
         try:
             return jsonify({"chave": chave_publica_vapid()})
         except Exception:
             return jsonify({"erro": "Não foi possível configurar as notificações neste servidor."}), 503
+
+    @app.route("/api/notificacoes", methods=["GET"])
+    @login_obrigatorio
+    def listar_notificacoes_route():
+        return jsonify(listar_notificacoes(g.usuario["id"]))
+
+    @app.route("/api/notificacoes/<int:notificacao_id>/lida", methods=["POST"])
+    @login_obrigatorio
+    def marcar_notificacao_lida_route(notificacao_id):
+        marcar_notificacao_lida(g.usuario["id"], notificacao_id)
+        return jsonify({"status": "ok"})
+
+    @app.route("/api/notificacoes/lidas", methods=["POST"])
+    @login_obrigatorio
+    def marcar_todas_notificacoes_lidas_route():
+        quantidade = marcar_todas_notificacoes_lidas(g.usuario["id"])
+        return jsonify({"status": "ok", "marcadas": quantidade})
 
     @app.route("/api/notificacoes/inscricao", methods=["POST", "DELETE"])
     @login_obrigatorio
@@ -150,6 +173,19 @@ def registrar_api(app):
         if isinstance(endpoint, str):
             remover_assinatura(g.usuario["id"], endpoint)
         return jsonify({"status": "ok"})
+
+    @app.route("/api/notificacoes/teste", methods=["POST"])
+    @login_obrigatorio
+    def testar_notificacoes_route():
+        resultado = notificar_usuario(
+            g.usuario["id"], "Notificação de teste", "As notificações do AulaMais estão funcionando.", "/configuracoes"
+        )
+        if resultado["enviadas"] == 0:
+            return jsonify({
+                "erro": "Nenhum push foi aceito. Reative as notificações neste aparelho e confira se o servidor está usando o ambiente virtual atualizado.",
+                **resultado,
+            }), 502 if resultado["falhas"] else 400
+        return jsonify({"status": "ok", **resultado}), 200
 
     @app.route("/api/aulas/<int:aula_id>", methods=["DELETE"])
     @login_obrigatorio

@@ -10,11 +10,13 @@
                         </summary>
                         <nav class="profile-settings-menu" aria-label="Opções do perfil">
                             <a href="{{ url_for('acessibilidade') }}">Acessibilidade</a>
-                            <a href="{{ url_for('configuracoes') }}#idioma">Mudar idioma</a>
                             <a href="{{ url_for('configuracoes') }}">Configurações</a>
                             <a href="{{ url_for('index') }}#suporte">Relatar um problema</a>
                             <span class="profile-settings-divider" aria-hidden="true"></span>
-                            <a class="profile-logout" href="{{ url_for('sair') }}">Sair</a>
+                            <form action="{{ url_for('sair') }}" method="post" class="profile-logout-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="profile-logout" type="submit">Sair</button>
+                            </form>
                         </nav>
                     </details>
                 </header>

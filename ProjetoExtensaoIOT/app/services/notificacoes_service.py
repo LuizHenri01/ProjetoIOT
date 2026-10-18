@@ -43,6 +43,14 @@ def chave_publica_vapid():
     return _chaves_vapid()[1]
 
 
+def push_disponivel():
+    try:
+        import pywebpush  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
 def salvar_assinatura(usuario_id, assinatura):
     endpoint = assinatura.get("endpoint", "")
     chaves = assinatura.get("keys") or {}
@@ -90,16 +98,67 @@ def remover_assinatura_por_id(assinatura_id):
     conexao.close()
 
 
+def listar_notificacoes(usuario_id, limite=50):
+    conexao = obter_conexao()
+    linhas = conexao.execute(
+        "SELECT id, titulo, mensagem, url, criada_em, lida_em "
+        "FROM notificacoes WHERE usuario_id = ? "
+        "ORDER BY criada_em DESC, id DESC LIMIT ?",
+        (usuario_id, limite),
+    ).fetchall()
+    nao_lidas = conexao.execute(
+        "SELECT COUNT(*) FROM notificacoes WHERE usuario_id = ? AND lida_em IS NULL",
+        (usuario_id,),
+    ).fetchone()[0]
+    conexao.close()
+    return {"notificacoes": [dict(linha) for linha in linhas], "nao_lidas": nao_lidas}
+
+
+def marcar_notificacao_lida(usuario_id, notificacao_id):
+    conexao = obter_conexao()
+    cursor = conexao.execute(
+        "UPDATE notificacoes SET lida_em = ? "
+        "WHERE id = ? AND usuario_id = ? AND lida_em IS NULL",
+        (datetime.now().isoformat(timespec="seconds"), notificacao_id, usuario_id),
+    )
+    conexao.commit()
+    conexao.close()
+    return cursor.rowcount > 0
+
+
+def marcar_todas_notificacoes_lidas(usuario_id):
+    conexao = obter_conexao()
+    cursor = conexao.execute(
+        "UPDATE notificacoes SET lida_em = ? WHERE usuario_id = ? AND lida_em IS NULL",
+        (datetime.now().isoformat(timespec="seconds"), usuario_id),
+    )
+    conexao.commit()
+    conexao.close()
+    return cursor.rowcount
+
+
 def notificar_usuario(usuario_id, titulo, mensagem, url="/aulas"):
     """Envia a todos os aparelhos inscritos; falhas de um aparelho não afetam a aula."""
-    conexao = obter_conexao()
-    inscricoes = conexao.execute(
-        "SELECT id, endpoint, assinatura_json FROM notificacoes_push WHERE usuario_id = ?",
-        (usuario_id,),
-    ).fetchall()
-    conexao.close()
+    try:
+        conexao = obter_conexao()
+        try:
+            conexao.execute(
+                "INSERT INTO notificacoes (usuario_id, titulo, mensagem, url, criada_em) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (usuario_id, titulo, mensagem, url, datetime.now().isoformat(timespec="seconds")),
+            )
+            conexao.commit()
+            inscricoes = conexao.execute(
+                "SELECT id, endpoint, assinatura_json FROM notificacoes_push WHERE usuario_id = ?",
+                (usuario_id,),
+            ).fetchall()
+        finally:
+            conexao.close()
+    except Exception:
+        logger.exception("NÃ£o foi possÃ­vel registrar a notificaÃ§Ã£o do usuÃ¡rio %s", usuario_id)
+        return {"enviadas": 0, "falhas": 1}
     if not inscricoes:
-        return
+        return {"enviadas": 0, "falhas": 0}
 
     try:
         from pywebpush import WebPushException, webpush
@@ -107,12 +166,13 @@ def notificar_usuario(usuario_id, titulo, mensagem, url="/aulas"):
         claims = {"sub": os.environ.get("VAPID_SUBJECT", "mailto:admin@example.com")}
     except ImportError:
         logger.warning("pywebpush não está instalado; notificações push não foram enviadas")
-        return
+        return {"enviadas": 0, "falhas": len(inscricoes)}
     except Exception:
         logger.exception("Não foi possível preparar as chaves de notificação")
-        return
+        return {"enviadas": 0, "falhas": len(inscricoes)}
 
     dados = {"title": titulo, "body": mensagem, "url": url}
+    resultado = {"enviadas": 0, "falhas": 0}
     for inscricao in inscricoes:
         try:
             endpoint_host = urlsplit(inscricao["endpoint"]).hostname or ""
@@ -142,6 +202,7 @@ def notificar_usuario(usuario_id, titulo, mensagem, url="/aulas"):
             if cabecalhos:
                 opcoes_envio["headers"] = cabecalhos
             webpush(**opcoes_envio)
+            resultado["enviadas"] += 1
         except WebPushException as erro:
             status = getattr(erro, "status_code", None) or getattr(
                 getattr(erro, "response", None), "status_code", None
@@ -149,6 +210,11 @@ def notificar_usuario(usuario_id, titulo, mensagem, url="/aulas"):
             if status in (404, 410):
                 remover_assinatura_por_id(inscricao["id"])
             else:
-                logger.warning("Push não entregue ao aparelho inscrito (status %s)", status)
+                resultado["falhas"] += 1
+                resposta = getattr(erro, "response", None)
+                detalhe = getattr(resposta, "text", "")[:300] if resposta else str(erro)[:300]
+                logger.warning("Push não entregue (status %s): %s", status, detalhe)
         except Exception:
+            resultado["falhas"] += 1
             logger.exception("Falha ao enviar push para o aparelho inscrito")
+    return resultado

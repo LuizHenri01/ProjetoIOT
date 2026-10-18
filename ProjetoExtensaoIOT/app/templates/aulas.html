@@ -10,7 +10,23 @@
             <p class="lesson-intro">Cadastre cada matéria uma vez e guarde nela suas aulas, fotos e transcrições.</p>
           </div>
           {% if materias %}<button class="btn-nova" type="button" data-toggle-subject-form aria-controls="nova-materia" aria-expanded="false"><i class="bi bi-plus-lg" data-toggle-subject-icon aria-hidden="true"></i> <span data-toggle-subject-label>Nova matéria</span></button>{% endif %}
+          <button class="notification-toggle" id="alternar-central-notificacoes" type="button" aria-label="Abrir notifica&ccedil;&otilde;es" aria-controls="central-notificacoes" aria-expanded="false">
+            <i class="bi bi-bell" aria-hidden="true"></i>
+            <span class="notification-count" id="contador-notificacoes" hidden></span>
+          </button>
         </header>
+
+        <section class="notification-center" id="central-notificacoes" aria-labelledby="titulo-central-notificacoes" hidden>
+          <div class="notification-center-heading">
+            <div><h2 id="titulo-central-notificacoes">Notifica&ccedil;&otilde;es</h2><p>Avisos de aulas e fotos salvas.</p></div>
+            <div class="notification-controls">
+              <button type="button" class="notification-sound-toggle" id="alternar-som-notificacoes" aria-pressed="false">Ativar som</button>
+              <button type="button" class="notification-read-all" id="marcar-notificacoes-lidas">Marcar todas como lidas</button>
+            </div>
+          </div>
+          <p class="notification-center-status" id="status-central-notificacoes" role="status" aria-live="polite">Carregando avisos...</p>
+          <ul class="notification-list" id="lista-notificacoes"></ul>
+        </section>
 
         {% with mensagens = get_flashed_messages(with_categories=true) %}
           {% if mensagens %}<div class="mensagens">{% for categoria, texto in mensagens %}<p class="mensagem {{ categoria }}" role="{{ 'alert' if categoria == 'erro' else 'status' }}">{{ texto }}</p>{% endfor %}</div>{% endif %}

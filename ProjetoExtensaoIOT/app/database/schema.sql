@@ -39,3 +39,16 @@ CREATE TABLE IF NOT EXISTS notificacoes_push (
     assinatura_json TEXT NOT NULL,
     criado_em TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS notificacoes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    titulo TEXT NOT NULL,
+    mensagem TEXT NOT NULL,
+    url TEXT NOT NULL DEFAULT '/aulas',
+    criada_em TEXT NOT NULL,
+    lida_em TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_notificacoes_usuario_data
+ON notificacoes(usuario_id, criada_em DESC);

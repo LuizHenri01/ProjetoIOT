@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/componentes.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/app-tema.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app-tema.css', v='4') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/preferencias.css') }}">
 </head>
 
@@ -34,8 +34,17 @@
 
   {% include "_site_footer.html" %}
   {% include "_acessibilidade_flutuante.html" %}
+  <div id="controle-aula-flutuante" class="active-lesson-control" hidden>
+    <button id="encerrar-aula-flutuante" class="active-lesson-end-button" type="button">
+      <i class="bi bi-stop-circle-fill" aria-hidden="true"></i>
+      <span>Encerrar aula</span>
+    </button>
+    <p id="status-encerrar-aula-flutuante" class="active-lesson-end-status" role="status" aria-live="polite"></p>
+  </div>
   <script src="{{ url_for('static', filename='js/voz.js') }}"></script>
   <script src="{{ url_for('static', filename='js/site-menu.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/notificacoes.js', v='3') }}"></script>
+  <script src="{{ url_for('static', filename='js/controle-aula-flutuante.js', v='1') }}"></script>
 {% block scripts %}{% endblock %}
 </body>
 

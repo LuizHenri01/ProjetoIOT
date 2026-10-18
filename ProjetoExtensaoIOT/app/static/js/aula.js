@@ -9,6 +9,12 @@ const botaoEncerrarAula = document.getElementById("botao-encerrar-aula");
 const statusAula = document.getElementById("status-aula");
 let temporizadorEncerramento;
 let encerramentoAutomaticoEmCurso = false;
+const CHAVE_TOAST_ENCERRAMENTO_PENDENTE_AULA = "aulamais:toast-after-class-end";
+
+function avisarToastAposEncerramento() {
+    try { sessionStorage.setItem(CHAVE_TOAST_ENCERRAMENTO_PENDENTE_AULA, "1"); }
+    catch (erro) { /* o redirecionamento ainda funciona se o armazenamento estiver bloqueado */ }
+}
 
 function pararTemporizador() {
     if (temporizadorEncerramento) clearTimeout(temporizadorEncerramento);
@@ -43,6 +49,7 @@ async function encerrarAutomaticamente() {
         const dados = await resposta.json();
         if (!dados.aula) {
             mostrarEstadoAula(null);
+            avisarToastAposEncerramento();
             campoNomeAula.value = "";
             statusAula.textContent = "A aula foi encerrada automaticamente no horário programado.";
             window.location.assign("/aulas");
@@ -139,11 +146,15 @@ botaoIniciarAula.addEventListener("click", async () => {
 });
 
 botaoEncerrarAula.addEventListener("click", async () => {
-    if (window.pararTranscricao) await window.pararTranscricao();
     try {
+        if (window.pararTranscricao) {
+            try { await window.pararTranscricao(); }
+            catch (erro) { /* falha ao salvar a Ãºltima fala nÃ£o deve impedir o encerramento */ }
+        }
         const resposta = await AulaMais.api("/api/aulas/encerrar", { method: "POST" });
         if (resposta.ok) {
             campoNomeAula.value = "";
+            avisarToastAposEncerramento();
             window.location.assign("/aulas");
         } else if (resposta.status === 400) {
             await carregarAulaAtiva();
