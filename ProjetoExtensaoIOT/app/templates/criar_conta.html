@@ -1,0 +1,55 @@
+{% extends "base_site.html" %}
+{% block titulo %}Criar conta{% endblock %}
+{% block estilos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/entrar.css') }}">{% endblock %}
+{% block conteudo %}
+        {%- with mensagens = get_flashed_messages(with_categories=true) %}
+        {%- if mensagens %}
+        <div class="mensagens">
+            {%- for categoria, texto in mensagens %}
+            <p class="mensagem {{ categoria }}" role="{{ 'alert' if categoria == 'erro' else 'status' }}">{{ texto }}</p>
+            {%- endfor %}
+        </div>
+        {%- endif %}
+        {%- endwith %}
+        <section id="cadastro" class="auth-layout" aria-labelledby="cc-titulo">
+            <form class="auth-card" action="{{ url_for('criar_conta') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <p class="auth-eyebrow">Comece por aqui</p>
+                <h1 id="cc-titulo">Criar sua conta</h1>
+                <p class="auth-intro">Organize e revise suas aulas em um só lugar.</p>
+                <p><label for="cc-nome">Nome</label><input type="text" id="cc-nome" name="nome" autocomplete="name"
+                        maxlength="80" required></p>
+                <p><label for="cc-email">E-mail</label><input type="email" id="cc-email" name="email" autocomplete="email"
+                        maxlength="120" required></p>
+                <p><label for="cc-senha">Senha</label><input type="password" id="cc-senha" name="senha"
+                        minlength="6" maxlength="128" autocomplete="new-password" required></p>
+                <p class="auth-terms"><label><input type="checkbox" name="termos" required> Aceito os <a
+                            href="{{ url_for('index') }}#termos">Termos de uso</a> e a <a
+                            href="{{ url_for('index') }}#privacidade">Privacidade</a></label></p>
+                <p><button type="submit">Criar conta</button></p>
+                <p class="auth-switch">Já tem uma conta? <a href="{{ url_for('entrar') }}">Entrar</a></p>
+            </form>
+            <aside class="auth-aside" aria-labelledby="cc-lateral">
+                <p class="auth-aside-eyebrow">AulaMais · seu espaço de aprendizagem</p>
+                <h2 id="cc-lateral">Aprenda no seu ritmo.</h2>
+                <div class="auth-preview" aria-hidden="true">
+                    <div class="auth-preview-board">
+                        <span>CONTEÚDO ORGANIZADO</span>
+                        <strong>Árvore Binária</strong>
+                        <p>Fala transcrita e conteúdo da aula reunidos para facilitar a revisão.</p>
+                    </div>
+                    <div class="auth-preview-summary">
+                        <strong>Registro da aula</strong>
+                        <span>Transcrição e fotos do quadro</span>
+                        <small>Revise no seu ritmo</small>
+                    </div>
+                </div>
+                <ul>
+                    <li><i class="bi bi-journal-text" aria-hidden="true"></i> Suas aulas em um só lugar</li>
+                    <li><i class="bi bi-pencil-square" aria-hidden="true"></i> Conteúdo fácil de revisar</li>
+                    <li><i class="bi bi-universal-access" aria-hidden="true"></i> Recursos de acessibilidade</li>
+                    <li><i class="bi bi-cloud-download-fill" aria-hidden="true"></i> Baixe uma cópia dos seus dados</li>
+                </ul>
+            </aside>
+        </section>
+{% endblock %}

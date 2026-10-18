@@ -1,0 +1,84 @@
+{% extends "base_site.html" %}
+{% block titulo %}Funcionalidades{% endblock %}
+{% block estilos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/funcionalidades.css') }}">{% endblock %}
+{% block conteudo %}
+        <section class="features-page" aria-labelledby="func-titulo">
+            <header class="features-hero">
+                <div class="features-hero-copy">
+                    <p class="eyebrow">Recursos do AulaMais</p>
+                    <h1 id="func-titulo">Acompanhe a aula. Volte ao conteúdo quando precisar.</h1>
+                    <p>Uma forma simples de reunir fotos do quadro, trechos de fala e anotações para revisar depois.</p>
+                    <div class="features-hero-actions">
+                        <a href="{{ url_for('aulas' if usuario else 'entrar') }}" class="btn-primario">{% if usuario %}Abrir minhas aulas{% else %}Entrar e experimentar{% endif %}</a>
+                        <a href="{{ url_for('acessibilidade') }}">Conheça a acessibilidade <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+                <aside class="features-note" aria-label="Sobre esta versão">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    <p><strong>Versão demonstrativa</strong><br>O reconhecimento varia conforme o navegador e o aparelho. O AulaMais guarda os trechos de texto, não um arquivo de áudio.</p>
+                </aside>
+            </header>
+
+            <nav class="features-index" aria-label="Nesta página">
+                <span>Nesta página</span>
+                <a href="#cat-captura">Registrar</a>
+                <a href="#cat-estudos">Revisar</a>
+                <a href="#cat-acessibilidade">Personalizar</a>
+                <a href="#da-aula-ao-conteudo">Etapas</a>
+            </nav>
+
+            <section id="cat-captura" class="feature-category" aria-labelledby="h-captura">
+                <header class="feature-heading">
+                    <span class="feature-number">01</span>
+                    <div><p class="eyebrow">Durante a aula</p><h2 id="h-captura">Registre o que importa</h2><p>Comece uma aula e guarde referências para consultar mais tarde.</p></div>
+                </header>
+                <ul class="feature-list">
+                    <li><i class="bi bi-camera" aria-hidden="true"></i><div><h3>Foto do quadro</h3><p>Use o celular ou computador para guardar o conteúdo escrito durante a aula.</p></div></li>
+                    <li><i class="bi bi-mic" aria-hidden="true"></i><div><h3>Transcrição de voz</h3><p>Inicie o reconhecimento de voz disponível no navegador. A precisão varia conforme o aparelho e o ambiente.</p></div></li>
+                    <li><i class="bi bi-journal-text" aria-hidden="true"></i><div><h3>Registro por disciplina</h3><p>Fotos, transcrição e anotações ficam associadas à aula correspondente.</p></div></li>
+                </ul>
+            </section>
+
+            <section id="cat-estudos" class="feature-category" aria-labelledby="h-estudos">
+                <header class="feature-heading">
+                    <span class="feature-number">02</span>
+                    <div><p class="eyebrow">Depois da aula</p><h2 id="h-estudos">Revise do seu jeito</h2><p>Encontre os trechos, releia suas notas e retome aulas anteriores.</p></div>
+                </header>
+                <ul class="feature-list">
+                    <li><i class="bi bi-search" aria-hidden="true"></i><div><h3>Busca na transcrição</h3><p>Pesquise palavras e expressões nos trechos reconhecidos.</p></div></li>
+                    <li><i class="bi bi-pencil-square" aria-hidden="true"></i><div><h3>Anotações da aula</h3><p>Escreva e salve observações junto ao registro de cada aula.</p></div></li>
+                    <li><i class="bi bi-clock-history" aria-hidden="true"></i><div><h3>Histórico</h3><p>Consulte aulas anteriores por disciplina, data e situação.</p></div></li>
+                    <li><i class="bi bi-volume-up" aria-hidden="true"></i><div><h3>Leitura em voz alta</h3><p>Ouça trechos e outros textos com a voz disponível no aparelho.</p></div></li>
+                    <li><i class="bi bi-download" aria-hidden="true"></i><div><h3>Cópia dos seus dados</h3><p>Baixe um arquivo com os dados da conta, transcrições, anotações e fotos salvas nesta instalação.</p></div></li>
+                </ul>
+            </section>
+
+            <section id="cat-acessibilidade" class="feature-category" aria-labelledby="h-acessibilidade">
+                <header class="feature-heading">
+                    <span class="feature-number">03</span>
+                    <div><p class="eyebrow">Preferências de leitura</p><h2 id="h-acessibilidade">Ajuste a experiência</h2><p>Configure a apresentação para ficar mais confortável no seu aparelho.</p></div>
+                </header>
+                <ul class="feature-list">
+                    <li><i class="bi bi-type" aria-hidden="true"></i><div><h3>Tamanho e espaçamento</h3><p>Aumente ou reduza o texto e ajuste o espaço entre linhas e palavras.</p></div></li>
+                    <li><i class="bi bi-circle-half" aria-hidden="true"></i><div><h3>Alto contraste</h3><p>Ative uma combinação de cores com maior contraste.</p></div></li>
+                    <li><i class="bi bi-bullseye" aria-hidden="true"></i><div><h3>Modo foco</h3><p>Reduza os elementos ao redor do conteúdo principal.</p></div></li>
+                    <li><i class="bi bi-universal-access" aria-hidden="true"></i><div><h3>Redução de animações</h3><p>Diminua movimentos e transições da interface.</p></div></li>
+                </ul>
+                <p class="feature-more"><a href="{{ url_for('acessibilidade') }}">Ver opções de acessibilidade <i class="bi bi-arrow-right" aria-hidden="true"></i></a></p>
+            </section>
+
+            <section id="da-aula-ao-conteudo" class="feature-flow" aria-labelledby="dac-titulo">
+                <header class="feature-flow-heading">
+                    <p class="eyebrow">Em poucos passos</p>
+                    <h2 id="dac-titulo">Da aula à revisão</h2>
+                    <p>O professor segue com a aula. Você escolhe quais registros ajudam no seu estudo.</p>
+                </header>
+                <ol class="flow-steps">
+                    <li><strong>Comece uma aula</strong><span>Informe a disciplina e, se quiser, o professor.</span></li>
+                    <li><strong>Registre referências</strong><span>Fotografe o quadro e inicie a transcrição quando necessário.</span></li>
+                    <li><strong>Revise o conteúdo</strong><span>Consulte os trechos, fotos e anotações reunidos.</span></li>
+                </ol>
+                <a href="{{ url_for('aulas' if usuario else 'entrar') }}" class="btn-primario">{% if usuario %}Abrir minhas aulas{% else %}Conhecer o AulaMais{% endif %}</a>
+            </section>
+        </section>
+{% endblock %}

@@ -1,0 +1,23 @@
+{%- set secao = {'detalhe_aula': 'aulas'}.get(request.endpoint, request.endpoint) -%}
+<header id="topo" class="site-header">
+    <a href="{{ url_for('index') }}" class="logo" aria-label="AulaMais — início"><i class="bi bi-journal-bookmark-fill" aria-hidden="true"></i> Aula<strong>Mais</strong></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navegacao-principal" hidden>
+        <span class="menu-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>Menu</span>
+    </button>
+    <nav id="navegacao-principal" aria-label="Navegação principal">
+        <ul>
+            <li><a href="{{ url_for('index') }}"{% if secao == 'index' %} aria-current="page"{% endif %}>Início</a></li>
+            <li><a href="{{ url_for('index') }}#sobre">Sobre</a></li>
+            <li><a href="{{ url_for('funcionalidades') }}"{% if secao == 'funcionalidades' %} aria-current="page"{% endif %}>Funcionalidades</a></li>
+            {%- if usuario %}
+            <li><a href="{{ url_for('aulas') }}"{% if secao == 'aulas' %} aria-current="page"{% endif %}>Aulas</a></li>
+            <li><a href="{{ url_for('captura') }}"{% if secao == 'captura' %} aria-current="page"{% endif %}>Captura</a></li>
+            <li><a href="{{ url_for('perfil') }}"{% if secao == 'perfil' %} aria-current="page"{% endif %}>Perfil</a></li>
+            {%- else %}
+            <li><a href="{{ url_for('criar_conta') }}"{% if secao == 'criar_conta' %} aria-current="page"{% endif %}>Criar conta</a></li>
+            <li><a href="{{ url_for('entrar') }}" class="btn-primario"{% if secao == 'entrar' %} aria-current="page"{% endif %}>Entrar</a></li>
+            {%- endif %}
+        </ul>
+    </nav>
+</header>

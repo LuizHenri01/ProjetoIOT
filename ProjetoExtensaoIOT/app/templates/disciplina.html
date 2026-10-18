@@ -1,0 +1,63 @@
+{% extends "base_app.html" %}
+{% block titulo %}{{ materia.nome }}{% endblock %}
+{% block descricao %}<meta name="description" content="Aulas registradas em {{ materia.nome }}.">{% endblock %}
+{% block conteudo %}
+      <section class="view lesson-library subject-detail" aria-labelledby="page-title">
+        <nav class="breadcrumb subject-breadcrumb" aria-label="Navegação estrutural">
+          <a href="{{ url_for('aulas') }}">Matérias</a><span aria-hidden="true">›</span><span aria-current="page">{{ materia.nome }}</span>
+        </nav>
+        <header class="lesson-page-heading subject-detail-heading">
+          <div>
+            <p class="lesson-eyebrow">Matéria</p>
+            <h1 id="page-title">{{ materia.nome }}</h1>
+            <p class="lesson-intro"><i class="bi bi-person" aria-hidden="true"></i> {{ materia.professor or 'Professor não informado' }} <span aria-hidden="true">·</span> <i class="bi bi-clock" aria-hidden="true"></i> {{ materia.horario_inicio[:5] }}–{{ materia.horario_fim[:5] if materia.horario_fim else '—' }}</p>
+          </div>
+          <a class="btn-nova" href="{{ url_for('captura', materia=materia.id) }}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar aula</a>
+        </header>
+
+        <div class="subject-detail-summary">
+          <span><i class="bi bi-journal-text" aria-hidden="true"></i> {{ aulas|length }} {{ 'aula' if aulas|length == 1 else 'aulas' }}</span>
+          {% set ativas = aulas|selectattr('status_classe', 'equalto', 'ongoing')|list|length %}
+          {% if ativas %}<span class="status ongoing"><i class="bi bi-record-circle" aria-hidden="true"></i> {{ ativas }} em andamento</span>{% endif %}
+        </div>
+
+        {% if aulas %}
+        <div class="subject-toolbar subject-lessons-toolbar">
+          <h2>Aulas desta matéria</h2>
+          <label class="search-box"><i class="bi bi-search" aria-hidden="true"></i><span class="visually-hidden">Buscar aulas</span><input id="busca-aulas-disciplina" type="search" placeholder="Buscar pelo nome da aula ou data" autocomplete="off"></label>
+        </div>
+        <div class="lesson-list subject-lesson-list" id="lista-aulas-disciplina" aria-label="Aulas de {{ materia.nome }}">
+          {% for aula in aulas %}
+          <div class="subject-lesson-row">
+            <a class="lesson-card" href="{{ url_for('detalhe_aula', slug=aula.slug) }}">
+              <span class="lesson-icon {{ aula.cor }}" aria-hidden="true"><i class="bi bi-journal-text"></i></span>
+              <span class="lesson-copy">
+                <strong>{{ aula.nome }}</strong>
+                <small><span><i class="bi bi-calendar3" aria-hidden="true"></i> {{ aula.data }}</span><span><i class="bi bi-clock" aria-hidden="true"></i> {{ aula.hora }}</span>{% if aula.status_classe == 'ongoing' and aula.fim_previsto %}<span><i class="bi bi-alarm" aria-hidden="true"></i> Encerra às {{ aula.fim_previsto }}</span>{% endif %}</small>
+              </span>
+              <span class="lesson-content-count"><i class="bi bi-images" aria-hidden="true"></i> Fotos e transcrição</span>
+              <span class="status {{ aula.status_classe }}">{{ aula.status }}</span>
+              <span class="chevron" aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <button class="lesson-delete-button" type="button" aria-label="Excluir {{ aula.nome }}" title="Excluir aula"
+              data-delete-kind="lesson" data-delete-url="{{ url_for('excluir_aula_route', aula_id=aula.id) }}"
+              data-delete-name="{{ aula.nome }}">
+              <i class="bi bi-trash3" aria-hidden="true"></i><span>Excluir</span>
+            </button>
+          </div>
+          {% endfor %}
+          <p class="empty-state" id="sem-aulas-disciplina" hidden>Nenhuma aula corresponde à busca.</p>
+        </div>
+        <p class="visually-hidden" id="status-busca-aulas-disciplina" role="status" aria-live="polite"></p>
+        {% include "_dialog_excluir.html" %}
+        {% else %}
+        <div class="lesson-empty-state">
+          <span class="lesson-empty-icon"><i class="bi bi-journal-plus" aria-hidden="true"></i></span>
+          <h2>Esta matéria ainda não tem aulas</h2>
+          <p>Adicione a primeira aula para começar a guardar fotos do quadro e transcrições.</p>
+          <a class="btn-nova" href="{{ url_for('captura', materia=materia.id) }}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar primeira aula</a>
+        </div>
+        {% endif %}
+      </section>
+{% endblock %}
+{% block scripts %}{% if aulas %}<script src="{{ url_for('static', filename='js/disciplina.js') }}"></script><script src="{{ url_for('static', filename='js/exclusoes.js') }}"></script>{% endif %}{% endblock %}

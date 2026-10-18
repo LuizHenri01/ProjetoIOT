@@ -1,0 +1,107 @@
+/* AulaMais — preferências de acessibilidade do usuário (site e app).
+   comum.js grava os atributos data-* em <html> a partir do que a pessoa escolheu em Acessibilidade. */
+
+/* Contraste alto: preto e amarelo, em qualquer tema */
+:root[data-contraste="alto"] {
+    --papel: #000; --superficie: #000; --suave: #1d1d1d;
+    --tinta: #fff; --muted: #fff; --linha: #fff;
+    --indigo: #ffd84d; --sobre-indigo: #000; --acento: #000; --foco: #ffd84d; --realce: #333300;
+    --info-fundo: #000; --info-texto: #fff; --ok-fundo: #000; --ok-texto: #fff;
+    --aviso-fundo: #000; --aviso-texto: #ffd84d; --erro-fundo: #000; --erro-texto: #ffd84d; --erro: #ffd84d;
+}
+:root[data-contraste="alto"] .status { border: 2px solid currentColor; }
+:root[data-contraste="alto"] .lesson-card, :root[data-contraste="alto"] .settings-card,
+:root[data-contraste="alto"] .captura-secao, :root[data-contraste="alto"] .summary-card,
+:root[data-contraste="alto"] .detail-extra { border-color: #fff; }
+
+/* Espaçamento do texto */
+:root[data-espaco="medio"] { --entrelinha: 1.85; --tracking: 0.02em; --palavras: 0.05em; }
+:root[data-espaco="amplo"] { --entrelinha: 2.1; --tracking: 0.05em; --palavras: 0.12em; }
+
+/* Reduzir animações */
+:root[data-animacoes="reduzir"], :root[data-animacoes="reduzir"] * {
+    scroll-behavior: auto !important; transition: none !important; animation: none !important;
+}
+
+/* Modo foco: esmaece navegação e rodapé até receberem foco ou mouse */
+:root[data-foco="ligado"] :is(.site-header, .site-footer, .sidebar) { opacity: 0.35; transition: opacity 0.2s; }
+:root[data-foco="ligado"] :is(.site-header, .site-footer, .sidebar):is(:hover, :focus-within) { opacity: 1; }
+
+/* Botão "Ouvir esta página" (aparece quando "Leitura do conteúdo" está ligada) */
+.btn-ouvir-pagina {
+    position: fixed; right: 1rem; bottom: 1rem; z-index: 50;
+    min-height: 3rem; padding: 0 1.25rem;
+    font: inherit; font-weight: 700;
+    color: var(--sobre-indigo); background: var(--indigo);
+    border: 2px solid var(--sobre-indigo); border-radius: 999px; cursor: pointer;
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--tinta) 30%, transparent);
+}
+
+/* Controles rápidos de texto disponíveis em todas as páginas. */
+.quick-access-widget {
+    position: fixed;
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+    width: 70px;
+    padding: 6px;
+    font-size: 14px;
+    color: var(--sobre-indigo);
+    background: var(--indigo);
+    border: 1px solid color-mix(in srgb, var(--sobre-indigo) 32%, transparent);
+    border-radius: 24px;
+    box-shadow: 0 .5rem 1.5rem color-mix(in srgb, var(--tinta) 28%, transparent);
+}
+.quick-access-widget[data-open="false"] { width: 50px; padding: 0; background: transparent; border-color: transparent; border-radius: 50%; box-shadow: none; }
+.quick-access-widget [hidden] { display: none !important; }
+.quick-access-panel {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    width: 100%;
+    padding: 3px 0 5px;
+}
+.quick-access-title { font-size: 13px; font-weight: 700; line-height: 1.2; }
+.quick-text-button {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    padding: 0;
+    color: var(--indigo);
+    background: var(--superficie);
+    border: 0;
+    border-radius: 50%;
+    font: inherit;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color .15s ease, transform .15s ease;
+}
+.quick-text-button:hover { color: var(--tinta); background: var(--suave); transform: scale(1.04); }
+.quick-text-button:focus-visible, .quick-access-toggle:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; }
+.quick-text-value { color: var(--sobre-indigo); font-size: 13px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.quick-text-reset { margin-top: 1px; }
+.quick-access-toggle {
+    display: grid;
+    width: 50px;
+    height: 50px;
+    flex: 0 0 auto;
+    place-items: center;
+    padding: 0;
+    color: var(--sobre-indigo);
+    background: var(--indigo);
+    border: 2px solid var(--superficie);
+    border-radius: 50%;
+    font: inherit;
+    font-size: 27px;
+    cursor: pointer;
+}
+.quick-access-toggle:hover, .quick-access-toggle[aria-expanded="true"] { color: var(--indigo); background: var(--superficie); }
+.quick-text-button:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 30rem) {
+    .quick-access-widget { left: max(9px, env(safe-area-inset-left)); bottom: max(9px, env(safe-area-inset-bottom)); }
+}

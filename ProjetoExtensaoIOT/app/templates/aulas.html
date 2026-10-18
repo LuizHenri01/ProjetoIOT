@@ -1,0 +1,82 @@
+{% extends "base_app.html" %}
+{% block titulo %}Matérias{% endblock %}
+{% block descricao %}<meta name="description" content="Organize matérias e aulas no AulaMais.">{% endblock %}
+{% block conteudo %}
+      <section class="view lesson-library subject-library" aria-labelledby="page-title">
+        <header class="lesson-page-heading">
+          <div>
+            <p class="lesson-eyebrow">Biblioteca de estudos</p>
+            <h1 id="page-title">Matérias</h1>
+            <p class="lesson-intro">Cadastre cada matéria uma vez e guarde nela suas aulas, fotos e transcrições.</p>
+          </div>
+          {% if materias %}<button class="btn-nova" type="button" data-toggle-subject-form aria-controls="nova-materia" aria-expanded="false"><i class="bi bi-plus-lg" data-toggle-subject-icon aria-hidden="true"></i> <span data-toggle-subject-label>Nova matéria</span></button>{% endif %}
+        </header>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+          {% if mensagens %}<div class="mensagens">{% for categoria, texto in mensagens %}<p class="mensagem {{ categoria }}" role="{{ 'alert' if categoria == 'erro' else 'status' }}">{{ texto }}</p>{% endfor %}</div>{% endif %}
+        {% endwith %}
+
+        <section class="subject-create-card" id="nova-materia" aria-labelledby="nova-materia-titulo"{% if materias %} hidden{% endif %}>
+          <div class="subject-create-heading">
+            <span class="lesson-overview-icon"><i class="bi bi-journal-plus" aria-hidden="true"></i></span>
+            <div><h2 id="nova-materia-titulo">Adicionar matéria</h2><p>Defina o professor e os horários padrão para as aulas.</p></div>
+            {% if materias %}<button class="subject-form-close" type="button" data-close-subject-form aria-label="Fechar formulário"><i class="bi bi-x-lg" aria-hidden="true"></i></button>{% endif %}
+          </div>
+          <form action="{{ url_for('criar_disciplina_route') }}" method="post" class="subject-create-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>Nome da matéria<input name="nome" type="text" maxlength="80" placeholder="Ex.: Matemática" required></label>
+            <label>Professor<input name="professor" type="text" maxlength="80" placeholder="Nome do professor" required></label>
+            <label>Horário de início<input name="horario_inicio" type="time" required></label>
+            <label>Horário de término<input name="horario_fim" type="time" required></label>
+            <button class="btn-nova" type="submit"><i class="bi bi-plus-lg" aria-hidden="true"></i> Salvar matéria</button>
+          </form>
+        </section>
+
+        {% if materias %}
+        <div class="lesson-overview" aria-label="Resumo da biblioteca">
+          <article class="lesson-overview-item"><span class="lesson-overview-icon"><i class="bi bi-collection" aria-hidden="true"></i></span><div><strong>{{ materias|length }}</strong><span>Matérias</span></div></article>
+          <article class="lesson-overview-item"><span class="lesson-overview-icon"><i class="bi bi-journal-text" aria-hidden="true"></i></span><div><strong>{{ total_aulas }}</strong><span>Aulas registradas</span></div></article>
+          <article class="lesson-overview-item"><span class="lesson-overview-icon lesson-overview-icon--active"><i class="bi bi-record-circle" aria-hidden="true"></i></span><div><strong>{{ em_andamento }}</strong><span>Em andamento</span></div></article>
+        </div>
+
+        <div class="subject-toolbar">
+          <label class="search-box"><i class="bi bi-search" aria-hidden="true"></i><span class="visually-hidden">Buscar matérias</span><input id="busca-materias" type="search" placeholder="Buscar matéria" autocomplete="off"></label>
+          <p class="subject-count">{{ materias|length }} {{ 'matéria' if materias|length == 1 else 'matérias' }}</p>
+        </div>
+
+        <div class="subject-grid" id="lista-materias" aria-label="Matérias">
+          {% for materia in materias %}
+          <article class="subject-card" data-subject="{{ materia.nome|lower }} {{ materia.professor|lower }}">
+            <div class="subject-card-top">
+              <span class="subject-icon {{ materia.cor }}" aria-hidden="true"><i class="bi bi-journal-bookmark-fill"></i></span>
+              {% if materia.aulas_ativas %}<span class="status ongoing">{{ materia.aulas_ativas }} em andamento</span>{% endif %}
+              <button class="subject-delete-button" type="button" aria-label="Excluir matéria {{ materia.nome }}" title="Excluir matéria"
+                data-delete-kind="subject" data-delete-url="{{ url_for('excluir_materia_route', materia_id=materia.id) }}"
+                data-delete-name="{{ materia.nome }}" data-delete-count="{{ materia.total_aulas }}">
+                <i class="bi bi-trash3" aria-hidden="true"></i>
+              </button>
+            </div>
+            <a class="subject-card-main" href="{{ url_for('detalhe_materia', materia_id=materia.id) }}">
+              <h2>{{ materia.nome }}</h2>
+              <p class="subject-card-summary">{{ materia.professor or 'Professor não informado' }} · {{ materia.horario_inicio[:5] }}–{{ materia.horario_fim[:5] if materia.horario_fim else '—' }}</p>
+              <div class="subject-card-footer">
+                <span><i class="bi bi-journal-text" aria-hidden="true"></i> {{ materia.total_aulas }} {{ 'aula' if materia.total_aulas == 1 else 'aulas' }}{% if materia.ultima_aula %} · Última em {{ materia.ultima_aula }}{% endif %}</span>
+                <span class="subject-open">Abrir matéria <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+              </div>
+            </a>
+          </article>
+          {% endfor %}
+          <p class="empty-state subject-no-results" id="sem-materias" hidden>Nenhuma matéria corresponde à busca.</p>
+        </div>
+        <p class="visually-hidden" id="status-busca-materias" role="status" aria-live="polite"></p>
+        {% include "_dialog_excluir.html" %}
+        {% else %}
+        <div class="lesson-empty-state">
+          <span class="lesson-empty-icon"><i class="bi bi-collection" aria-hidden="true"></i></span>
+          <h2>Adicione sua primeira matéria</h2>
+          <p>Depois, abra a matéria para criar aulas e guardar as fotos do quadro e as transcrições.</p>
+        </div>
+        {% endif %}
+      </section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/materias.js') }}"></script><script src="{{ url_for('static', filename='js/exclusoes.js') }}"></script>{% endblock %}

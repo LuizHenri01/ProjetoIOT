@@ -1,0 +1,148 @@
+{% extends "base_app.html" %}
+{% block titulo %}Captura em sala{% endblock %}
+{% block classe_main %} captura-page{% endblock %}
+{% block conteudo %}
+      <section class="view capture-view" aria-labelledby="page-title">
+        <header class="capture-page-heading">
+          <div class="capture-page-title">
+            <p class="capture-eyebrow">AulaMais <span aria-hidden="true">/</span> Sala de aula</p>
+            <h1 id="page-title">Captura em sala</h1>
+            <p class="capture-intro">Prepare a aula, registre o conteúdo e acompanhe a transcrição em um só lugar.</p>
+          </div>
+          <a class="capture-library-link" href="{{ url_for('aulas') }}"><i class="bi bi-collection" aria-hidden="true"></i> Minhas aulas</a>
+        </header>
+
+        <p id="status-conexao" class="estado capture-connection" role="status" aria-live="polite">
+            Verificando conexão com o servidor...
+        </p>
+
+        <div class="capture-workspace">
+        <section class="captura-secao capture-card capture-card--lesson" aria-labelledby="titulo-aula">
+            <div class="capture-card-heading">
+                <span class="capture-card-icon" aria-hidden="true"><i class="bi bi-journal-bookmark"></i></span>
+                <div><span class="capture-step">01 · Preparação</span>
+                <h2 id="titulo-aula">Dados da aula</h2></div>
+            </div>
+            <p class="capture-hint">Escolha uma matéria, dê um nome à aula e inicie a captura.</p>
+
+            <div class="capture-fields">
+                <div class="capture-field-wide">
+                    <label for="campo-disciplina" class="rotulo">Matéria</label>
+                    <select id="campo-disciplina" class="campo-linha" required>
+                        <option value="">Selecione uma matéria</option>
+                        {% for materia in materias %}
+                        <option value="{{ materia.id }}" data-professor="{{ materia.professor or 'Professor não informado' }}" data-inicio="{{ materia.horario_inicio[:5] }}" data-fim="{{ materia.horario_fim[:5] if materia.horario_fim else '' }}"{% if materia_selecionada and materia.id == materia_selecionada.id %} selected{% endif %}>{{ materia.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="capture-field-wide">
+                    <label for="campo-nome-aula" class="rotulo">Nome da aula</label>
+                    <input type="text" id="campo-nome-aula" class="campo-linha" maxlength="100" placeholder="Ex.: Frações e números decimais" autocomplete="off" required>
+                </div>
+                <div>
+                    <label for="campo-professor" class="rotulo">Professor</label>
+                    <input type="text" id="campo-professor" class="campo-linha" readonly aria-readonly="true">
+                </div>
+                <div>
+                    <label for="campo-horario-inicio" class="rotulo">Início padrão</label>
+                    <input type="time" id="campo-horario-inicio" class="campo-linha" disabled>
+                </div>
+                <div>
+                    <label for="campo-horario-fim" class="rotulo">Término automático</label>
+                    <input type="time" id="campo-horario-fim" class="campo-linha" disabled>
+                </div>
+            </div>
+
+            {% if not materias %}<p class="estado capture-status">Cadastre uma matéria antes de iniciar uma aula. <a href="{{ url_for('aulas') }}#nova-materia">Adicionar matéria</a></p>{% endif %}
+
+            <div class="capture-actions">
+                <button type="button" id="botao-iniciar-aula" class="botao-grande"{% if not materias %} disabled{% endif %}><i class="bi bi-play-fill" aria-hidden="true"></i> Iniciar aula</button>
+                <button type="button" id="botao-encerrar-aula" class="botao-grande capture-button-secondary" disabled hidden><i class="bi bi-stop-fill" aria-hidden="true"></i> Encerrar aula</button>
+            </div>
+
+            <p id="status-aula" class="estado capture-status" role="status" aria-live="polite">Verificando aula...</p>
+        </section>
+
+        <section class="captura-secao capture-card capture-card--transcript" aria-labelledby="titulo-fala">
+            <div class="capture-card-heading">
+                <span class="capture-card-icon capture-card-icon--live" aria-hidden="true"><i class="bi bi-soundwave"></i></span>
+                <div><span class="capture-step">02 · Durante a aula</span>
+                <h2 id="titulo-fala">Transcrição da fala</h2></div>
+            </div>
+            <p class="capture-hint">Inicie a transcrição para acompanhar e salvar as falas reconhecidas.</p>
+
+            <div class="capture-actions">
+                <button type="button" id="botao-gravar" class="botao-grande" disabled><i class="bi bi-mic-fill" aria-hidden="true"></i> Iniciar transcrição</button>
+                <button type="button" id="botao-parar" class="botao-grande capture-button-secondary" disabled><i class="bi bi-stop-fill" aria-hidden="true"></i> Parar transcrição</button>
+            </div>
+
+            <p id="status-gravacao" class="estado capture-status" role="status" aria-live="polite"></p>
+            <p id="previa-fala" class="capture-live-preview" aria-live="off"></p>
+
+            <div class="capture-transcript-log">
+                <h3>Trechos reconhecidos</h3>
+                <ul id="lista-transcricoes" class="lista-transcricoes" aria-live="off"></ul>
+            </div>
+        </section>
+
+        <div class="capture-tools-grid" aria-label="Ferramentas adicionais da aula">
+        <section class="captura-secao capture-card capture-card--photo" aria-labelledby="titulo-foto">
+            <div class="capture-card-heading">
+                <span class="capture-card-icon" aria-hidden="true"><i class="bi bi-camera"></i></span>
+                <div><span class="capture-step">03 · Registro visual</span>
+                <h2 id="titulo-foto">Foto do quadro</h2></div>
+            </div>
+            <p class="capture-hint">Guarde uma imagem do conteúdo escrito durante a aula.</p>
+
+            <!-- O campo vem antes do rótulo para manter o foco visível no botão acessível. -->
+            <input type="file" id="input-foto" accept="image/*" capture="environment" class="input-oculto" disabled>
+            <label for="input-foto" class="botao-grande capture-file-button">
+                <i class="bi bi-camera-fill" aria-hidden="true"></i>
+                Tirar foto do quadro
+            </label>
+
+            <p id="status-foto" class="estado capture-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="captura-secao capture-card capture-card--microphone" aria-labelledby="titulo-mic">
+            <div class="capture-card-heading">
+                <span class="capture-card-icon" aria-hidden="true"><i class="bi bi-mic"></i></span>
+                <div><span class="capture-step">04 · Verificação</span>
+                <h2 id="titulo-mic">Teste do microfone</h2></div>
+            </div>
+            <p class="capture-hint">Confira se o navegador está recebendo sua voz antes de transcrever.</p>
+
+            <button type="button" id="botao-mic" class="botao-grande"><i class="bi bi-mic" aria-hidden="true"></i> Testar microfone</button>
+
+            <p id="status-mic" class="estado capture-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="captura-secao capture-card capture-card--accessible" aria-labelledby="titulo-conteudo">
+            <div class="capture-card-heading">
+                <span class="capture-card-icon" aria-hidden="true"><i class="bi bi-ear"></i></span>
+                <div><span class="capture-step">05 · Acessibilidade</span>
+                <h2 id="titulo-conteudo">Ouvir um conteúdo</h2></div>
+            </div>
+            <p class="capture-hint">Cole o texto de um slide ou do quadro para ouvi-lo em voz alta.</p>
+
+            <label for="texto-conteudo" class="rotulo">Cole aqui o texto do slide ou do quadro</label>
+            <textarea id="texto-conteudo" class="campo-texto" rows="6" maxlength="12000"></textarea>
+
+            <div class="capture-actions">
+                <button type="button" id="botao-ouvir" class="botao-grande"><i class="bi bi-volume-up" aria-hidden="true"></i> Ouvir conteúdo</button>
+                <button type="button" id="botao-parar-leitura" class="botao-grande capture-button-secondary" disabled><i class="bi bi-stop-fill" aria-hidden="true"></i> Parar leitura</button>
+            </div>
+
+            <p id="status-conteudo" class="estado capture-status" role="status" aria-live="polite"></p>
+        </section>
+        </div>
+        </div>
+      </section>
+{% endblock %}
+{% block scripts %}  <script src="{{ url_for('static', filename='js/conexao.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/aula.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/fotos.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/microfone.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/transcricao.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/conteudo.js') }}"></script>
+{% endblock %}

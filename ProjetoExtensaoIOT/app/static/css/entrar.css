@@ -1,0 +1,303 @@
+/* AulaMais — páginas independentes para entrar e criar conta. */
+
+.auth-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 34rem) minmax(22rem, 1fr);
+    gap: clamp(1.25rem, 4vw, 3rem);
+    align-items: stretch;
+    max-width: 78rem;
+    margin-inline: auto;
+}
+
+.auth-card {
+    padding: clamp(1.25rem, 3vw, 2rem);
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-grande);
+    box-shadow: 0 1rem 2.5rem color-mix(in srgb, var(--tinta) 8%, transparent);
+}
+
+.auth-card > p { margin-bottom: 1.1rem; }
+.auth-card > p:last-child { margin-bottom: 0; }
+
+.auth-card h1 {
+    margin: 0 0 0.55rem;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+}
+
+.auth-eyebrow {
+    margin: 0 0 0.75rem;
+    color: var(--indigo);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.auth-intro {
+    margin-bottom: 1.5rem;
+    color: var(--muted);
+    font-size: 1.1rem;
+}
+
+.auth-card label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.65rem 0.8rem;
+    font: inherit;
+    color: var(--tinta);
+    background: var(--papel);
+    border: 2px solid var(--linha);
+    border-radius: 0.6rem;
+}
+
+.auth-card input:focus-visible {
+    border-color: var(--indigo);
+}
+
+.auth-card input::placeholder {
+    color: var(--muted);
+    opacity: 1;
+}
+
+.auth-card input:user-invalid {
+    border-color: var(--erro);
+    box-shadow: 0 0 0 1px var(--erro);
+}
+
+.auth-card button {
+    width: 100%;
+    min-height: 3.1rem;
+    padding: 0.6rem 1.25rem;
+    font: inherit;
+    font-weight: 700;
+    color: var(--sobre-indigo);
+    background: var(--indigo);
+    border: 2px solid var(--indigo);
+    border-radius: 0.6rem;
+    cursor: pointer;
+}
+
+.auth-card button:hover {
+    filter: brightness(1.12);
+}
+
+.auth-switch {
+    margin: 1.25rem 0 0 !important;
+    padding-top: 1rem;
+    color: var(--muted);
+    text-align: left;
+    border-top: 1px solid var(--linha);
+}
+
+.auth-switch a {
+    font-weight: 700;
+}
+
+.auth-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0;
+    min-height: 33rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    color: var(--sobre-indigo);
+    background: var(--indigo);
+    border-radius: var(--raio-grande);
+    overflow: hidden;
+}
+
+.auth-aside-eyebrow {
+    margin: 0 0 0.7rem;
+    color: color-mix(in srgb, var(--sobre-indigo) 78%, transparent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.auth-aside h2 {
+    max-width: 18ch;
+    margin: 0 0 1rem;
+    font-size: clamp(1.65rem, 3vw, 2.2rem);
+}
+
+.auth-preview {
+    position: relative;
+    flex: 1;
+    min-height: 17rem;
+    margin: 0.25rem 0 1.25rem;
+}
+
+.auth-preview-board {
+    width: 90%;
+    min-height: 12rem;
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+    color: var(--giz);
+    background: var(--lousa);
+    border: 0.5rem solid var(--moldura);
+    border-radius: 0.65rem;
+}
+
+.auth-preview-board span,
+.auth-preview-board strong,
+.auth-preview-board p {
+    display: block;
+}
+
+.auth-preview-board span {
+    margin-bottom: 0.65rem;
+    color: color-mix(in srgb, var(--giz) 72%, transparent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.auth-preview-board strong {
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+}
+
+.auth-preview-board p {
+    max-width: 34ch;
+    margin: 0.5rem 0 0;
+    color: color-mix(in srgb, var(--giz) 86%, transparent);
+    font-size: 1rem;
+}
+
+.auth-preview-summary {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    gap: 0.5rem;
+    width: min(21rem, 74%);
+    padding: 1rem 1.1rem;
+    color: var(--tinta);
+    background: var(--superficie);
+    border: 2px solid var(--sobre-indigo);
+    border-radius: var(--raio);
+    box-shadow: 0 0.75rem 1.75rem color-mix(in srgb, var(--tinta) 25%, transparent);
+}
+
+.auth-preview-summary strong {
+    color: var(--indigo);
+    font-size: 1.05rem;
+}
+
+.auth-preview-summary > span:not(.auth-progress) {
+    font-size: 0.9rem;
+}
+
+.auth-preview-summary small {
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+.auth-progress {
+    display: block;
+    height: 0.55rem;
+    overflow: hidden;
+    background: var(--suave);
+    border-radius: 999px;
+}
+
+.auth-progress span {
+    display: block;
+    width: 68%;
+    height: 100%;
+    background: var(--indigo);
+    border-radius: inherit;
+}
+
+.auth-aside ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.auth-aside li {
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+}
+.auth-aside li .bi { display: inline-block; width: 1.5rem; }
+
+.auth-terms label {
+    position: relative;
+    padding-left: 2rem;
+    font-weight: 400;
+}
+
+.auth-terms input {
+    position: absolute;
+    top: 0.3rem;
+    left: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    accent-color: var(--indigo);
+}
+
+.mensagens {
+    max-width: 60rem;
+    margin: 0 auto 1.25rem;
+}
+
+.mensagem {
+    margin: 0 0 0.75rem;
+    padding: 0.8rem 1rem;
+    font-weight: 700;
+    border: 2px solid currentColor;
+    border-radius: 0.6rem;
+}
+
+.mensagem.erro {
+    color: var(--erro-texto);
+    background: var(--erro-fundo);
+}
+
+.mensagem.info {
+    color: var(--info-texto);
+    background: var(--info-fundo);
+}
+
+@media (max-width: 60rem) {
+    .auth-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        max-width: 34rem;
+    }
+
+    .auth-aside {
+        min-height: 0;
+        padding: 1.1rem 1.25rem;
+    }
+
+    .auth-aside h2 {
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-preview { min-height: 15rem; margin-bottom: 1rem; }
+    .auth-preview-board { width: 94%; min-height: 10.5rem; }
+    .auth-preview-summary { width: min(19rem, 78%); }
+    .auth-aside ul {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 0.85rem;
+    }
+}
+
+@media (max-width: 30rem) {
+    .auth-card { padding: 1.1rem; }
+    .auth-card h1 { font-size: 2rem; }
+    .auth-aside ul { grid-template-columns: 1fr; }
+}

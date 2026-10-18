@@ -1,0 +1,160 @@
+/*
+ * Componentes funcionais do sistema (captura em sala e ações nas aulas).
+ *
+ * Este arquivo veio do antigo style.css. As regras globais (body, h1,
+ * :focus-visible) saíram porque agora quem define a base da página é o
+ * aulas.css; aqui ficam só os componentes, com as cores do design
+ * (--navy, --ink, --line, definidas no aulas.css).
+ */
+
+/* Cartão de cada bloco da página de captura */
+.captura-secao {
+    max-width: 720px;
+    margin: 0 0 16px;
+    padding: 22px;
+    font-size: 1rem;
+    line-height: 1.6;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.captura-secao h2 {
+    margin: 0 0 12px;
+    color: #1e408e;
+    font-size: 1.15rem;
+}
+
+.captura-secao h3 {
+    margin: 20px 0 8px;
+    color: #1e408e;
+    font-size: 1rem;
+}
+
+/* Mensagens anunciadas pelo leitor de tela (role="status").
+   Ficam na cor de texto normal, não na cor "apagada" do design. */
+.estado {
+    max-width: 720px;
+    margin: 12px 0 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ink);
+}
+
+/* Botão grande e acessível (foto, gravar, parar, ouvir) */
+.botao-grande {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 14px 0 0;
+    padding: 1.25rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #ffffff;
+    background: var(--navy);
+    border: 0;
+    border-radius: 0.75rem;
+    cursor: pointer;
+
+    /* Área de toque mínima recomendada pelas diretrizes WCAG: 44x44px.
+       Estamos bem acima disso de propósito, pensando em quem tem
+       baixa visão residual ou dificuldade motora combinada. */
+    min-height: 64px;
+}
+
+.botao-grande:hover {
+    background: var(--navy-dark);
+}
+
+button.botao-grande:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+}
+
+/* Foco visível, bem marcado: navegação por teclado e leitor de tela */
+.botao-grande:focus-visible,
+.captura-secao :focus-visible,
+.audio-section :focus-visible {
+    outline: 4px solid #000000;
+    outline-offset: 3px;
+}
+
+/* O input da foto fica escondido e o <label> faz o papel de botão.
+   Quando o foco do teclado cai no input, o botão ao lado mostra o contorno
+   (por isso o input vem ANTES do label no HTML). */
+.input-oculto:focus-visible + .botao-grande {
+    outline: 4px solid #000000;
+    outline-offset: 3px;
+}
+
+/* Esconde o input nativo visualmente, mas mantém acessível
+   para leitores de tela e navegação por teclado */
+.input-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Campo de texto do conteúdo acessível */
+.rotulo {
+    display: block;
+    max-width: 600px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.campo-texto {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    margin: 8px 0 0;
+    padding: 1rem;
+    font: inherit;
+    color: var(--ink);
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 0.5rem;
+}
+
+/* Lista de transcrições e player de áudio */
+.lista-transcricoes {
+    max-width: 600px;
+    margin: 8px 0 0;
+    padding-left: 1.25rem;
+}
+
+.lista-transcricoes li + li {
+    margin-top: 6px;
+}
+
+.player {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    margin: 16px 0 0;
+}
+
+/* Mensagem de conexão logo abaixo do título da página */
+.view > .estado {
+    margin: 0 0 16px;
+}
+
+/*
+ * Correção do layout no celular (o design original já tinha este defeito).
+ * No celular o menu lateral vira uma barra horizontal que deve rolar dentro
+ * de si mesma (aulas.css: overflow-x: auto). Mas numa grade, "1fr" não deixa a
+ * coluna ficar menor que o conteúdo, então a página inteira se alargava
+ * (484px num celular de 390px) em vez de o menu rolar. min-width: 0 resolve.
+ */
+@media (max-width: 680px) {
+    .app-shell > * {
+        min-width: 0;
+    }
+}

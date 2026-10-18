@@ -1,0 +1,25 @@
+{% extends "base_app.html" %}
+{% block titulo %}Configurações{% endblock %}
+{% block conteudo %}
+            <section class="view" aria-labelledby="titulo">
+                <p class="profile-return"><a href="{{ url_for('perfil') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar para o perfil</a></p>
+                <header class="page-header">
+                    <h1 id="titulo">Configurações</h1>
+                </header>
+                <form class="settings-card" id="form-config">
+                    <h2>Preferências deste aparelho</h2>
+                    <label><input type="checkbox" id="cfg-tela-ligada" checked> Manter a tela ligada durante a transcrição</label>
+                    <label for="idioma">Idioma</label>
+                    <select id="idioma">
+                        <option>Português (Brasil)</option>
+                        <option disabled>English (em breve)</option>
+                        <option disabled>Español (em breve)</option>
+                    </select>
+                    <button type="submit" class="btn-nova">Salvar configurações</button>
+                    <p id="status-config" class="estado" role="status" aria-live="polite"></p>
+                    <p>Tamanho do texto, contraste, voz e outras opções ficam em <a href="{{ url_for('acessibilidade') }}">Acessibilidade</a>.</p>
+                </form>
+            </section>
+{% endblock %}
+{% block scripts %}  <script src="{{ url_for('static', filename='js/configuracoes.js') }}"></script>
+{% endblock %}

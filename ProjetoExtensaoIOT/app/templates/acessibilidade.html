@@ -1,0 +1,134 @@
+{% extends "base_site.html" %}
+{% block titulo %}Acessibilidade{% endblock %}
+{% block estilos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/acessibilidade.css') }}">{% endblock %}
+{% block conteudo %}
+        <section id="acessibilidade" class="accessibility-page" aria-labelledby="acess-titulo">
+            {% if usuario %}<p class="profile-return"><a href="{{ url_for('perfil') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar para o perfil</a></p>{% endif %}
+            <header class="accessibility-heading">
+                <p class="accessibility-eyebrow">Seu jeito de aprender</p>
+                <h1 id="acess-titulo">Acessibilidade</h1>
+                <p>Ajuste a leitura e a aparência para deixar o AulaMais mais confortável para você. As preferências são salvas neste aparelho.</p>
+            </header>
+
+            <form id="form-acessibilidade">
+                <fieldset class="accessibility-settings">
+                    <legend>Personalize sua experiência</legend>
+                    <div class="accessibility-settings-grid">
+                        <div class="accessibility-setting text-size-setting">
+                            <div class="setting-copy">
+                                <label id="rotulo-tamanho">Tamanho do texto</label>
+                                <p id="ajuda-tamanho">Aumente o texto até 200% ou reduza até 80%.</p>
+                            </div>
+                            <input type="hidden" id="ac-tam" name="tamanho" value="100">
+                            <div class="text-size-control" role="group" aria-labelledby="rotulo-tamanho" aria-describedby="ajuda-tamanho">
+                                <button type="button" id="diminuir-tamanho" class="size-stepper" aria-label="Diminuir tamanho do texto">−</button>
+                                <output id="valor-tamanho" class="text-size-value" aria-live="polite">100%</output>
+                                <button type="button" id="aumentar-tamanho" class="size-stepper" aria-label="Aumentar tamanho do texto">+</button>
+                            </div>
+                        </div>
+
+                        <div class="accessibility-setting">
+                            <div class="setting-copy">
+                                <label for="ac-esp">Espaçamento do texto</label>
+                                <p>Escolha mais espaço entre linhas e palavras.</p>
+                            </div>
+                            <select id="ac-esp" name="espaco">
+                                <option>Padrão</option>
+                                <option>Médio</option>
+                                <option>Amplo</option>
+                            </select>
+                        </div>
+
+                        <div class="accessibility-setting">
+                            <div class="setting-copy">
+                                <label for="ac-con">Contraste</label>
+                                <p>Alto contraste reforça a diferença entre texto e fundo.</p>
+                            </div>
+                            <select id="ac-con" name="contraste">
+                                <option>Padrão</option>
+                                <option>Alto contraste</option>
+                            </select>
+                        </div>
+
+                        <div class="accessibility-setting">
+                            <div class="setting-copy">
+                                <label for="ac-vel">Velocidade da leitura</label>
+                                <p>Defina o ritmo da leitura em voz alta.</p>
+                            </div>
+                            <select id="ac-vel" name="velocidade">
+                                <option>0,75x</option>
+                                <option selected>1x</option>
+                                <option>1,25x</option>
+                                <option>1,5x</option>
+                                <option>2x</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="accessibility-toggles" aria-label="Mais recursos de acessibilidade">
+                        <label class="accessibility-toggle"><input type="checkbox" name="leitura"> <span><strong>Leitura do conteúdo</strong><small>Mostra um botão para ouvir o texto da página.</small></span></label>
+                        <label class="accessibility-toggle"><input type="checkbox" name="foco"> <span><strong>Modo foco</strong><small>Reduz o destaque da navegação e do rodapé.</small></span></label>
+                        <label class="accessibility-toggle"><input type="checkbox" name="animacoes"> <span><strong>Reduzir animações</strong><small>Diminui movimentos e transições da interface.</small></span></label>
+                    </div>
+
+                    <div class="accessibility-actions">
+                        <button type="submit" class="save-preferences">Salvar preferências</button>
+                        <button type="reset" class="reset-preferences">Restaurar padrão</button>
+                        <span id="status-preferencias" role="status" aria-live="polite"></span>
+                    </div>
+                </fieldset>
+            </form>
+
+            <section id="recursos-acessibilidade" aria-labelledby="ra-titulo">
+                <div class="section-heading">
+                    <p class="accessibility-eyebrow">Recursos disponíveis</p>
+                    <h2 id="ra-titulo">Apoio para diferentes necessidades</h2>
+                </div>
+                <div class="accessibility-resource-grid">
+                    <article>
+                        <span class="resource-icon" aria-hidden="true">◉</span>
+                        <h3>Baixa visão</h3>
+                        <p>Amplie o texto, aumente o contraste e use a leitura em voz alta.</p>
+                    </article>
+                    <article>
+                        <span class="resource-icon" aria-hidden="true">Aa</span>
+                        <h3>Conforto na leitura</h3>
+                        <p>Ajuste o espaçamento entre linhas e palavras para acompanhar melhor o texto.</p>
+                    </article>
+                    <article>
+                        <span class="resource-icon" aria-hidden="true">≋</span>
+                        <h3>Dificuldades auditivas</h3>
+                        <p>Consulte os trechos de fala transcritos com seus horários.</p>
+                    </article>
+                    <article>
+                        <span class="resource-icon" aria-hidden="true">◎</span>
+                        <h3>Concentração</h3>
+                        <p>Use o modo foco e reduza animações para diminuir distrações visuais.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="mesma-aula" aria-labelledby="ma-titulo">
+                <div class="section-heading">
+                    <p class="accessibility-eyebrow">Veja as opções</p>
+                    <h2 id="ma-titulo">Um conteúdo, diferentes formas de acompanhar</h2>
+                    <p>Exemplo de como o mesmo conteúdo pode aparecer com algumas preferências ativadas.</p>
+                </div>
+                <div class="accessibility-preview-grid">
+                    <article class="modo-padrao">
+                        <h3>Padrão</h3>
+                        <p>Árvore binária: cada nó pode ter no máximo dois filhos.</p>
+                    </article>
+                    <article class="modo-contraste">
+                        <h3>Alto contraste</h3>
+                        <p>Árvore binária: cada nó pode ter no máximo dois filhos.</p>
+                    </article>
+                    <article class="modo-foco">
+                        <h3>Texto ampliado</h3>
+                        <p>Árvore binária: cada nó pode ter no máximo dois filhos.</p>
+                    </article>
+                </div>
+            </section>
+        </section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/acessibilidade.js') }}"></script>{% endblock %}

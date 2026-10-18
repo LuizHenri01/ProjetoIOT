@@ -1,0 +1,105 @@
+{% extends "base_app.html" %}
+{% block titulo %}Perfil{% endblock %}
+{% block conteudo %}
+            <section class="view perfil-view" aria-labelledby="titulo">
+                <header class="profile-heading">
+                    <h1 id="titulo">Perfil</h1>
+                    <details class="profile-settings">
+                        <summary aria-label="Abrir opções do perfil" title="Opções do perfil">
+                            <i class="bi bi-gear-fill" aria-hidden="true"></i>
+                        </summary>
+                        <nav class="profile-settings-menu" aria-label="Opções do perfil">
+                            <a href="{{ url_for('acessibilidade') }}">Acessibilidade</a>
+                            <a href="{{ url_for('configuracoes') }}#idioma">Mudar idioma</a>
+                            <a href="{{ url_for('configuracoes') }}">Configurações</a>
+                            <a href="{{ url_for('index') }}#suporte">Relatar um problema</a>
+                            <span class="profile-settings-divider" aria-hidden="true"></span>
+                            <a class="profile-logout" href="{{ url_for('sair') }}">Sair</a>
+                        </nav>
+                    </details>
+                </header>
+                {%- with mensagens = get_flashed_messages(with_categories=true) %}
+                {%- if mensagens %}
+                <div class="mensagens">
+                    {%- for categoria, texto in mensagens %}
+                    <p class="mensagem {{ categoria }}" role="{{ 'alert' if categoria == 'erro' else 'status' }}">{{ texto }}</p>
+                    {%- endfor %}
+                </div>
+                {%- endif %}
+                {%- endwith %}
+
+                <section class="profile-summary" aria-labelledby="perfil-atual-titulo">
+                    <div class="profile-avatar-column">
+                        <div class="profile-avatar-frame">
+                            <img id="profile-avatar-image" class="profile-avatar-image"{% if tem_foto_perfil %} src="{{ url_for('foto_perfil') }}" alt="Foto de perfil de {{ usuario.nome }}"{% else %} alt="Prévia da foto de perfil" hidden{% endif %}>
+                            <span id="profile-avatar-fallback" class="profile-avatar-fallback" aria-hidden="true"{% if tem_foto_perfil %} hidden{% endif %}>{{ usuario.nome[0] | upper }}</span>
+                            <label for="profile-photo-input" class="profile-photo-trigger" aria-label="Escolher foto de perfil" title="Mudar foto de perfil"><i class="bi bi-camera-fill" aria-hidden="true"></i></label>
+                        </div>
+                        <form action="{{ url_for('atualizar_foto_perfil_route') }}" method="post" enctype="multipart/form-data" class="profile-photo-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input id="profile-photo-input" class="visually-hidden" type="file" name="foto" accept="image/jpeg,image/png,image/webp" aria-label="Selecionar imagem de perfil">
+                            <button id="profile-photo-submit" class="profile-photo-submit" type="submit" disabled>Salvar foto</button>
+                            <p id="profile-photo-help" role="status" aria-live="polite">JPG, PNG ou WebP · até 5 MB</p>
+                        </form>
+                    </div>
+                    <div class="profile-summary-copy">
+                        <p class="profile-eyebrow">Perfil de estudante</p>
+                        <h2 id="perfil-atual-titulo">{{ usuario.nome }}</h2>
+                        <p>{{ usuario.email }}</p>
+                        <div class="profile-social-stats" aria-label="Atividade no AulaMais">
+                            <div><strong>{{ total_aulas }}</strong><span>Aulas</span></div>
+                            <div><strong>{{ total_materias }}</strong><span>Matérias</span></div>
+                            <div><strong>{{ total_fotos }}</strong><span>Fotos</span></div>
+                        </div>
+                        <p class="profile-bio">Seu espaço para organizar aulas, rever transcrições e guardar registros do quadro.</p>
+                        <a class="profile-edit-link" href="#dados-conta"><i class="bi bi-pencil" aria-hidden="true"></i> Editar perfil</a>
+                    </div>
+                </section>
+
+                <div class="profile-settings-grid">
+                <section class="settings-card profile-data-card" id="dados-conta" aria-labelledby="dados-conta-titulo">
+                    <h2 id="dados-conta-titulo">Dados da conta</h2>
+                    <form action="{{ url_for('atualizar_perfil') }}" method="post" class="profile-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <label for="perfil-nome">Nome</label>
+                        <input id="perfil-nome" name="nome" type="text" maxlength="80" value="{{ usuario.nome }}" required>
+                        <label for="perfil-email">E-mail</label>
+                        <input id="perfil-email" name="email" type="email" maxlength="120" value="{{ usuario.email }}" required>
+                        <p>Conta criada em {{ usuario.criado_em[8:10] }}/{{ usuario.criado_em[5:7] }}/{{ usuario.criado_em[:4] }}.</p>
+                        <button type="submit" class="btn-nova">Salvar dados</button>
+                    </form>
+                </section>
+
+                <section class="settings-card account-section" aria-labelledby="senha-titulo">
+                    <h2 id="senha-titulo">Alterar senha</h2>
+                    <form action="{{ url_for('atualizar_senha') }}" method="post" class="profile-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <label for="senha-atual">Senha atual</label>
+                        <input id="senha-atual" name="senha_atual" type="password" autocomplete="current-password" required>
+                        <label for="senha-nova">Nova senha (mínimo de 6 caracteres)</label>
+                        <input id="senha-nova" name="senha_nova" type="password" minlength="6" maxlength="128" autocomplete="new-password" required>
+                        <button type="submit" class="btn-nova">Alterar senha</button>
+                    </form>
+                </section>
+
+                <section class="settings-card account-section" aria-labelledby="exportar-titulo">
+                    <h2 id="exportar-titulo">Uma cópia dos seus dados</h2>
+                    <p>O arquivo inclui seus dados de conta, aulas, anotações, transcrições e fotos que ainda estejam salvas nesta instalação.</p>
+                    <a class="btn-nova" href="{{ url_for('exportar_dados') }}">Baixar meus dados (.zip)</a>
+                </section>
+
+                <section class="settings-card account-section profile-danger-card" aria-labelledby="excluir-titulo">
+                    <h2 id="excluir-titulo">Excluir conta e dados</h2>
+                    <p>A exclusão remove sua conta, aulas, anotações, transcrições e fotos desta instalação. Exporte uma cópia antes, se quiser guardar esses dados.</p>
+                    <form action="{{ url_for('apagar_conta') }}" method="post" class="profile-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <label for="senha-exclusao">Confirme sua senha</label>
+                        <input id="senha-exclusao" name="senha_atual" type="password" autocomplete="current-password" required>
+                        <label class="confirm-delete"><input type="checkbox" name="confirmar_exclusao" value="sim" required> Entendo que esta ação apaga os dados desta conta.</label>
+                        <button type="submit" class="btn-nova">Excluir minha conta</button>
+                    </form>
+                </section>
+                </div>
+            </section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/perfil.js') }}"></script>{% endblock %}

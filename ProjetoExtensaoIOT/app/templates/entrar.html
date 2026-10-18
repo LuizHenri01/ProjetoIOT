@@ -1,0 +1,51 @@
+{% extends "base_site.html" %}
+{% block titulo %}Entrar{% endblock %}
+{% block estilos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/entrar.css') }}">{% endblock %}
+{% block conteudo %}
+        {%- with mensagens = get_flashed_messages(with_categories=true) %}
+        {%- if mensagens %}
+        <div class="mensagens">
+            {%- for categoria, texto in mensagens %}
+            <p class="mensagem {{ categoria }}" role="{{ 'alert' if categoria == 'erro' else 'status' }}">{{ texto }}</p>
+            {%- endfor %}
+        </div>
+        {%- endif %}
+        {%- endwith %}
+        <section id="entrar" class="auth-layout" aria-labelledby="ent-titulo">
+            <form class="auth-card" action="{{ url_for('entrar') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="proximo" value="{{ proximo or '' }}">
+                <p class="auth-eyebrow">Sua sala de estudos</p>
+                <h1 id="ent-titulo">Bem-vindo de volta</h1>
+                <p class="auth-intro">Entre para continuar acompanhando suas aulas.</p>
+                <p><label for="ent-email">E-mail</label><input type="email" id="ent-email" name="email"
+                        placeholder="seu@email.com" autocomplete="email" required></p>
+                <p><label for="ent-senha">Senha</label><input type="password" id="ent-senha" name="senha"
+                        autocomplete="current-password" required></p>
+                <p><button type="submit">Entrar</button></p>
+                <p class="auth-switch">Ainda não possui uma conta? <a href="{{ url_for('criar_conta') }}">Criar conta</a></p>
+            </form>
+            <aside class="auth-aside" aria-labelledby="ent-lateral">
+                <p class="auth-aside-eyebrow">AulaMais · sua área de estudos</p>
+                <h2 id="ent-lateral">Continue suas aulas de onde parou.</h2>
+                <div class="auth-preview" aria-hidden="true">
+                    <div class="auth-preview-board">
+                        <span>AULA EM DESTAQUE</span>
+                        <strong>Árvore Binária</strong>
+                        <p>Raiz, nós e folhas: acompanhe e revise os pontos principais.</p>
+                    </div>
+                    <div class="auth-preview-summary">
+                        <strong>Registro da aula</strong>
+                        <span>Transcrição e fotos do quadro</span>
+                        <small>Consulte e faça anotações</small>
+                    </div>
+                </div>
+                <ul>
+                    <li><i class="bi bi-journal-text" aria-hidden="true"></i> Aulas organizadas</li>
+                    <li><i class="bi bi-pencil-square" aria-hidden="true"></i> Anotações por aula</li>
+                    <li><i class="bi bi-universal-access" aria-hidden="true"></i> Recursos de acessibilidade</li>
+                    <li><i class="bi bi-volume-up-fill" aria-hidden="true"></i> Leitura em voz alta</li>
+                </ul>
+            </aside>
+        </section>
+{% endblock %}

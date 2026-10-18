@@ -1,0 +1,169 @@
+{% extends "base_site.html" %}
+{% block titulo %}Início{% endblock %}
+{% block estilos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">{% endblock %}
+{% block conteudo %}
+        <section id="inicio" aria-labelledby="home-titulo">
+            <div class="hero">
+                <div class="hero-texto">
+                    <p class="eyebrow">Projeto de extensão · versão demonstrativa</p>
+                    <h1 id="home-titulo">Registre a aula. Revise no seu ritmo.</h1>
+                    <p>O AulaMais reúne fotos do quadro, trechos de transcrição e anotações para ajudar você a acompanhar e revisar cada aula.</p>
+                    <p class="hero-actions"><a href="{{ url_for('aulas' if usuario else 'entrar') }}" class="btn-primario">{% if usuario %}Abrir minhas aulas{% else %}Começar agora{% endif %}</a>
+                        <a href="#como-funciona">Veja como funciona <i class="bi bi-arrow-down-right" aria-hidden="true"></i></a></p>
+                </div>
+                <figure class="demo-aula">
+                    <figcaption>Uma aula, registros em um só lugar</figcaption>
+                    <div class="quadro">
+                        <span class="demo-label"><i class="bi bi-circle-fill" aria-hidden="true"></i> Prévia de aula</span>
+                        <p class="quadro-titulo">Árvore Binária</p>
+                        <p><i class="bi bi-diagram-3-fill" aria-hidden="true"></i> Raiz, nós e folhas</p>
+                        <p class="transcription-status"><i class="bi bi-soundwave" aria-hidden="true"></i> Transcrição em andamento</p>
+                    </div>
+                    <div class="resumo-flutuante">
+                        <p class="resumo-titulo"><i class="bi bi-check2-circle" aria-hidden="true"></i> Registro da aula</p>
+                        <ul>
+                            <li><i class="bi bi-mic" aria-hidden="true"></i> Trechos de fala</li>
+                            <li><i class="bi bi-camera" aria-hidden="true"></i> Foto do quadro</li>
+                            <li><i class="bi bi-pencil" aria-hidden="true"></i> Anotações</li>
+                        </ul>
+                    </div>
+                </figure>
+            </div>
+        </section>
+
+        <section id="sobre" class="content-section about-section" aria-labelledby="sobre-titulo">
+            <header class="section-heading">
+                <p class="eyebrow">Sobre o projeto</p>
+                <h2 id="sobre-titulo">A aula passa rápido. O material pode ficar.</h2>
+            </header>
+            <div class="about-layout">
+                <div class="about-intro">
+                    <p>O AulaMais ajuda estudantes a guardar referências da aula e voltar a elas quando precisarem.</p>
+                    <p>É um projeto de extensão em desenvolvimento. Nesta versão demonstrativa, reúne fotos do quadro, transcrição de voz pelo navegador e anotações.</p>
+                </div>
+                <div class="about-points">
+                    <article>
+                        <i class="bi bi-universal-access" aria-hidden="true"></i>
+                        <div><h3>Acesso em diferentes formatos</h3><p>Ajustes de texto, contraste, modo foco e leitura em voz alta apoiam diferentes formas de estudar.</p></div>
+                    </article>
+                    <article>
+                        <i class="bi bi-mic" aria-hidden="true"></i>
+                        <div><h3>Recursos que acompanham a aula</h3><p>O reconhecimento de voz depende do navegador e do aparelho. O sistema guarda o texto reconhecido, não grava o áudio nem gera resumos por IA.</p></div>
+                    </article>
+                    <article>
+                        <i class="bi bi-people" aria-hidden="true"></i>
+                        <div><h3>Feito para a comunidade escolar</h3><p>Estudantes e professores podem usar os registros como apoio para acompanhar e revisar o conteúdo.</p></div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="como-funciona" class="content-section process-section" aria-labelledby="cf-titulo">
+            <header class="section-heading">
+                <p class="eyebrow">Da aula à revisão</p>
+                <h2 id="cf-titulo">Como funciona</h2>
+                <p>Os registros ficam organizados para você consultar depois.</p>
+            </header>
+            <ol class="etapas">
+                <li><span class="step-icon"><i class="bi bi-journal-plus" aria-hidden="true"></i></span><div><strong>Prepare o registro</strong><p>Informe a disciplina e comece uma aula.</p></div></li>
+                <li><span class="step-icon"><i class="bi bi-camera" aria-hidden="true"></i></span><div><strong>Guarde referências</strong><p>Fotografe o quadro e, se quiser, inicie a transcrição no navegador.</p></div></li>
+                <li><span class="step-icon"><i class="bi bi-card-text" aria-hidden="true"></i></span><div><strong>Consulte o conteúdo</strong><p>Encontre fotos, trechos reconhecidos e suas anotações na mesma aula.</p></div></li>
+                <li><span class="step-icon"><i class="bi bi-arrow-repeat" aria-hidden="true"></i></span><div><strong>Revise quando precisar</strong><p>Pesquise na transcrição, ouça o texto ou baixe uma cópia.</p></div></li>
+            </ol>
+        </section>
+
+        <section id="recursos" class="content-section resources-section" aria-labelledby="rec-titulo">
+            <header class="section-heading">
+                <p class="eyebrow">O que você encontra</p>
+                <h2 id="rec-titulo">Recursos principais</h2>
+                <p>Ferramentas simples para registrar e retomar os pontos importantes.</p>
+            </header>
+            <div class="lista-recursos">
+                <article>
+                    <h3><i class="bi bi-camera-fill" aria-hidden="true"></i> Captura do quadro</h3>
+                    <p>O estudante tira uma foto do quadro pelo celular ou computador.</p>
+                </article>
+                <article>
+                    <h3><i class="bi bi-mic-fill" aria-hidden="true"></i> Transcrição da fala</h3>
+                    <p>O navegador pode reconhecer a fala e enviar os trechos de texto para salvar na aula.</p>
+                </article>
+                <article>
+                    <h3><i class="bi bi-sticky-fill" aria-hidden="true"></i> Anotações</h3>
+                    <p>Registre observações suas em cada aula e salve para consultar depois.</p>
+                </article>
+                <article>
+                    <h3><i class="bi bi-universal-access" aria-hidden="true"></i> Acessibilidade</h3>
+                    <p>Diversas opções para cada necessidade.</p>
+                </article>
+                <article>
+                    <h3><i class="bi bi-volume-up-fill" aria-hidden="true"></i> Leitura em voz alta</h3>
+                    <p>Ouça a transcrição e outros textos com a voz disponível no aparelho.</p>
+                </article>
+                <article>
+                    <h3><i class="bi bi-clock-history" aria-hidden="true"></i> Histórico das aulas</h3>
+                    <p>Todas as aulas ficam guardadas e organizadas.</p>
+                </article>
+            </div>
+            <p class="mais"><a href="{{ url_for('funcionalidades') }}">Ver todas as funcionalidades</a></p>
+        </section>
+
+        <section id="beneficios" class="content-section benefits-section" aria-labelledby="ben-titulo">
+            <header class="section-heading">
+                <p class="eyebrow">Por que AulaMais</p>
+                <h2 id="ben-titulo">Menos coisa para copiar. Mais espaço para aprender.</h2>
+            </header>
+            <div class="benefits-grid">
+                <article><i class="bi bi-collection" aria-hidden="true"></i><h3>Tudo junto por aula</h3><p>Fotos, transcrição e anotações ficam reunidas no histórico da disciplina.</p></article>
+                <article><i class="bi bi-sliders" aria-hidden="true"></i><h3>Você escolhe como revisar</h3><p>Use busca, leitura em voz alta e ajustes visuais de acordo com sua necessidade.</p></article>
+                <article><i class="bi bi-download" aria-hidden="true"></i><h3>Seus registros com você</h3><p>Baixe uma cópia das transcrições e dos demais dados guardados nesta instalação.</p></article>
+            </div>
+        </section>
+
+        <section id="faq" class="content-section faq-section" aria-labelledby="faq-titulo">
+            <header class="section-heading">
+                <p class="eyebrow">Dúvidas comuns</p>
+                <h2 id="faq-titulo">Perguntas frequentes</h2>
+            </header>
+            <div class="faq-list">
+                <details>
+                    <summary>Como o AulaMais registra uma aula?</summary>
+                    <p>O estudante tira ou escolhe uma foto e inicia o reconhecimento de voz oferecido pelo navegador. A disponibilidade varia conforme aparelho, navegador e conexão.</p>
+                </details>
+                <details>
+                    <summary>Preciso pagar para usar?</summary>
+                    <p>Esta é uma versão demonstrativa, sem cobrança.</p>
+                </details>
+                <details>
+                    <summary>Como ajusto o texto e o contraste?</summary>
+                    <p>Veja a página de <a href="{{ url_for('acessibilidade') }}">Acessibilidade</a>.</p>
+                </details>
+            </div>
+        </section>
+
+        <section id="suporte" class="content-section support-section" aria-labelledby="sup-titulo">
+            <div><p class="eyebrow">Precisa de ajuda?</p><h2 id="sup-titulo">Fale com a equipe do projeto</h2>
+            <p class="texto-legal">Procure a equipe responsável pelo projeto de extensão ou a pessoa que administra esta instalação do AulaMais.</p></div>
+            <i class="bi bi-chat-square-text" aria-hidden="true"></i>
+        </section>
+
+        <section id="privacidade" class="content-section legal-section" aria-labelledby="priv-titulo">
+            <h2 id="priv-titulo">Política de privacidade</h2>
+            <div class="texto-legal">
+                <p>O AulaMais é um projeto de extensão em desenvolvimento, usado para fins educacionais e de demonstração. Esta versão não tem cobrança nem recursos de publicidade.</p>
+                <p>Quando você cria uma conta, o sistema guarda nome, e-mail e uma senha protegida por hash. As aulas, anotações, transcrições e fotos ficam na pasta de dados do computador que hospeda o sistema, para que a pessoa responsável pela instalação possa administrá-las.</p>
+                <p>A transcrição depende do serviço de reconhecimento de voz do navegador. Conforme o navegador e o aparelho, o áudio pode ser processado por um serviço externo; o AulaMais recebe e guarda os trechos de texto reconhecidos, mas não grava um arquivo de áudio. Evite transcrever informações pessoais ou sensíveis.</p>
+                <p>As preferências de acessibilidade e algumas configurações ficam no armazenamento local do navegador deste aparelho. Você pode baixar seus dados e excluir sua conta pela página Perfil. Para apagar também essas preferências locais, limpe os dados do site no navegador. Em uma demonstração compartilhada, fale com a equipe responsável para entender como cópias de segurança são mantidas.</p>
+                <p>Para dúvidas sobre os dados desta instalação, procure a equipe responsável pelo projeto de extensão.</p>
+            </div>
+        </section>
+
+        <section id="termos" class="content-section legal-section" aria-labelledby="termos-titulo">
+            <h2 id="termos-titulo">Termos de uso</h2>
+            <div class="texto-legal">
+                <p>O AulaMais é um protótipo educacional de um projeto de extensão. Use-o para apoiar o estudo e a acessibilidade; transcrições automáticas podem conter erros e devem ser conferidas com o material da aula.</p>
+                <p>Antes de fotografar o quadro ou iniciar uma transcrição, explique a atividade e obtenha autorização do professor e da instituição de ensino, além do consentimento das pessoas que possam ser identificadas. Siga as orientações da escola, especialmente quando houver crianças ou adolescentes.</p>
+                <p>Não use o sistema para registrar, compartilhar ou publicar dados pessoais sem permissão. Quem administra a instalação é responsável por proteger o computador e os arquivos nela armazenados. O projeto não oferece suporte de emergência nem garante disponibilidade contínua.</p>
+                <p>Ao criar uma conta, você confirma que leu estas informações e a <a href="#privacidade">Política de privacidade</a>. A equipe do projeto pode atualizar estas orientações conforme os testes e o desenvolvimento avançarem.</p>
+            </div>
+        </section>
+{% endblock %}

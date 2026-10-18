@@ -1,0 +1,39 @@
+{#- Layout autenticado alinhado ao cabeçalho e ao rodapé do site público. -#}
+{%- set secao = {'detalhe_aula': 'aulas'}.get(request.endpoint, request.endpoint) -%}
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  {% block descricao %}{% endblock %}
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <script src="{{ url_for('static', filename='js/comum.js') }}"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
+  <title>{% block titulo %}{% endblock %} — AulaMais</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/aulas.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/componentes.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app-tema.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/preferencias.css') }}">
+</head>
+
+<body>
+  <a href="#conteudo-principal">Pular para o conteúdo</a>
+
+  {% include "_site_header.html" %}
+
+  <main id="conteudo-principal" tabindex="-1" class="main-content{% block classe_main %}{% endblock %}">
+{% block conteudo %}{% endblock %}
+  </main>
+
+  {% include "_site_footer.html" %}
+  {% include "_acessibilidade_flutuante.html" %}
+  <script src="{{ url_for('static', filename='js/voz.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/site-menu.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+
+</html>

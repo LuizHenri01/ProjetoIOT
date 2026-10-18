@@ -1,0 +1,72 @@
+/* ==========================================================
+   AulaMais — tokens de design (fonte única de cores e tipografia)
+   Carregado por base_site.html e base_app.html.
+   Nenhum outro CSS deve declarar cores em hexadecimal: use var(--...).
+   ========================================================== */
+
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: normal; font-weight: 400; font-display: swap;
+    src: url("../fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: normal; font-weight: 700; font-display: swap;
+    src: url("../fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: italic; font-weight: 400; font-display: swap;
+    src: url("../fonts/atkinson-hyperlegible-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: italic; font-weight: 700; font-display: swap;
+    src: url("../fonts/atkinson-hyperlegible-latin-700-italic.woff2") format("woff2"); }
+
+:root {
+    /* Base */
+    --papel: #f5f6fb;          /* fundo da página */
+    --superficie: #ffffff;     /* cartões, formulários */
+    --suave: #e3e6f4;          /* hover, trilhas, ícones */
+    --tinta: #141b2d;          /* texto principal */
+    --muted: #46506d;          /* texto secundário (≥ 7:1 sobre --papel) */
+    --linha: #c9cee3;          /* divisórias decorativas */
+
+    /* Marca */
+    --indigo: #2d2fa0;
+    --sobre-indigo: #ffffff;   /* texto sobre --indigo */
+    --acento: #ffd84d;         /* detalhe sobre --indigo (marcador do menu, números) */
+    --foco: #2d2fa0;
+    --realce: #fff0a0;         /* realce da leitura em voz alta */
+
+    /* Estados (fundo + texto, cada par com contraste ≥ 4,5:1) */
+    --ok-fundo: #d7f0e3;     --ok-texto: #0b5a39;
+    --info-fundo: #dfe4ff;   --info-texto: #232a86;
+    --aviso-fundo: #fff0c2;  --aviso-texto: #6a4100;
+    --erro-fundo: #fde2df;   --erro-texto: #9b1c14;   --erro: #b3261e;
+
+    /* Lousa da demonstração (única exceção: é uma ilustração) */
+    --lousa: #1f2f2d;
+    --giz: #f3f1e7;
+    --moldura: #a07c52;
+
+    /* Tipografia e forma */
+    --fonte: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --entrelinha: 1.6;
+    --tracking: 0em;
+    --palavras: 0em;
+    --largura: 66rem;
+    --raio: 0.75rem;
+    --raio-grande: 1.25rem;
+}
+
+/* Tema escuro automático. O app (base_app.html) usa data-tema="claro" e fica só claro por enquanto. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-tema="claro"]) {
+        --papel: #0e1324;
+        --superficie: #161c34;
+        --suave: #1f2747;
+        --tinta: #eceefa;
+        --muted: #b4bad6;
+        --linha: #333c63;
+        --indigo: #b0b5ff;
+        --sobre-indigo: #0e1324;
+        --acento: #0e1324;
+        --foco: #ffd84d;
+        --realce: #4d4100;
+        --ok-fundo: #12382a;     --ok-texto: #9ee6c0;
+        --info-fundo: #1f2747;   --info-texto: #c9ceff;
+        --aviso-fundo: #3d2f00;  --aviso-texto: #ffd98a;
+        --erro-fundo: #471a17;   --erro-texto: #ffb4ac;   --erro: #ff9a93;
+    }
+}

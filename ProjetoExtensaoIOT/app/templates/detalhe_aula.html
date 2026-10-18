@@ -1,0 +1,118 @@
+{% extends "base_app.html" %}
+{% block titulo %}{{ aula.nome }}{% endblock %}
+{% block classe_main %} lesson-detail{% endblock %}
+{% block conteudo %}
+            <nav class="breadcrumb" aria-label="Navegação estrutural"><a href="{{ url_for('aulas') }}">Matérias</a><span
+                    aria-hidden="true">›</span><a href="{{ url_for('detalhe_materia', materia_id=aula.materia_id) }}">{{ aula.disciplina }}</a><span aria-hidden="true">›</span><span aria-current="page">{{ aula.nome }}</span></nav>
+            <header class="detail-heading"><span class="detail-icon" aria-hidden="true"><i class="bi bi-journal-text"></i></span>
+                <div class="detail-title">
+                    <h1>{{ aula.nome }}</h1>
+                    <p><i class="bi bi-person-fill" aria-hidden="true"></i> {{ aula.professor }}</p>
+                    <p><i class="bi bi-calendar3" aria-hidden="true"></i> {{ aula.data }} · {{ aula.hora }}</p>
+                </div><span class="status {{ aula.status_classe }}">{{ aula.status }}</span>
+            </header>
+            <nav class="detail-tabs" aria-label="Seções da aula"><a href="#conteudo-aula"
+                    class="tab-current"><i class="bi bi-file-text" aria-hidden="true"></i> Conteúdo</a><a href="#quadro"><i class="bi bi-images" aria-hidden="true"></i> Quadro</a><a href="#anotacoes"><i class="bi bi-journal-text" aria-hidden="true"></i> Anotações</a></nav>
+            <section id="conteudo-aula" class="lesson-showcase" aria-label="Conteúdo registrado na aula">
+                <div class="lesson-board lesson-content-card">
+                    <p class="lesson-board-label"><i class="bi bi-soundwave" aria-hidden="true"></i> Conteúdo da aula</p>
+                    <h2>{{ aula.tema }}</h2>
+                    <div class="lesson-board-copy">
+                        <h3 class="transcricao-heading"><i class="bi bi-chat-left-text" aria-hidden="true"></i> Prévia da transcrição</h3>
+                        {%- if aula.transcricoes %}
+                        <label for="busca-transcricao" class="rotulo">Buscar palavra ou expressão</label>
+                        <input type="search" id="busca-transcricao" class="campo-busca-transcricao" autocomplete="off">
+                        <p id="status-busca-transcricao" class="estado" role="status" aria-live="polite"></p>
+                        <ol class="lista-transcricoes" id="resultados-busca-transcricao" hidden></ol>
+                        <ol class="lista-transcricoes">
+                            {%- for fala in aula.transcricoes[:3] %}
+                            <li><time>{{ fala.timestamp }}</time><p>{{ fala.texto|truncate(240, true, '…') }}</p></li>
+                            {%- endfor %}
+                        </ol>
+                        {%- if aula.transcricao_tem_mais %}
+                        <p class="transcricao-nota">Mostrando os três primeiros trechos. Busque uma palavra ou baixe o arquivo para consultar o texto completo.</p>
+                        {%- endif %}
+                        <div class="transcricao-actions">
+                            <p>Leve a transcrição completa com você para consultar depois.</p>
+                            <a class="transcricao-download"
+                                href="{{ url_for('baixar_transcricao_aula', aula_id=aula.id) }}">
+                                <i class="bi bi-download" aria-hidden="true"></i>
+                                Baixar transcrição <span>(.txt)</span>
+                            </a>
+                        </div>
+                        {%- else %}
+                        <p>Nenhuma fala foi transcrita nesta aula.</p>
+                        {%- endif %}
+                    </div>
+                </div>
+                <aside class="lesson-summary" aria-labelledby="resumo-aula-titulo">
+                    <h2 id="resumo-aula-titulo"><i class="bi bi-info-circle" aria-hidden="true"></i> Registro da aula</h2>
+                    <div class="lesson-summary-item">
+                        <h3>Tema</h3>
+                        <p>{{ aula.tema }}</p>
+                    </div>
+                    <div class="lesson-summary-item">
+                        <h3>Registro</h3>
+                        <p>{{ aula.registro }}</p>
+                    </div>
+                    <div class="lesson-summary-item">
+                        <h3>Conteúdo disponível</h3>
+                        <p>Consulte os trechos reconhecidos, pesquise palavras na transcrição, reveja as fotos do quadro e acrescente suas anotações.</p>
+                    </div>
+                    <div class="lesson-audio">
+                        <h3><i class="bi bi-volume-up" aria-hidden="true"></i> Ouvir conteúdo</h3>
+                        <div class="lesson-audio-actions">
+                            <button type="button" id="botao-ouvir-resumo" class="botao-grande"
+                                data-aula-id="{{ aula.id }}"><i class="bi bi-play-fill" aria-hidden="true"></i> Ouvir aula</button>
+                            <button type="button" id="botao-parar-resumo" class="botao-grande" disabled><i class="bi bi-stop-fill" aria-hidden="true"></i> Parar</button>
+                        </div>
+                        <p id="status-audio" class="estado" role="status" aria-live="polite"></p>
+                    </div>
+                </aside>
+            </section>
+            <section id="quadro" class="detail-extra detail-section-card">
+                <header class="detail-section-heading">
+                    <span class="detail-section-icon" aria-hidden="true"><i class="bi bi-images"></i></span>
+                    <div><p class="detail-section-eyebrow">MATERIAL DA AULA</p><h2>Fotos do quadro</h2><p>Revise as imagens registradas durante a aula.</p></div>
+                    {% if aula.fotos %}<span class="detail-section-count">{{ aula.fotos|length }} {{ 'foto' if aula.fotos|length == 1 else 'fotos' }}</span>{% endif %}
+                </header>
+                {%- if aula.fotos %}
+                <div class="photo-carousel" data-photo-carousel role="region" aria-label="Fotos do quadro desta aula" aria-roledescription="carrossel">
+                    <div class="photo-carousel-viewport" data-photo-viewport tabindex="0" aria-label="Use as setas do teclado ou deslize para navegar pelas fotos">
+                        <div class="photo-carousel-track">
+                    {%- for foto in aula.fotos %}
+                    <figure class="photo-carousel-slide" role="group" aria-roledescription="slide" aria-label="Foto {{ loop.index }} de {{ aula.fotos|length }}">
+                        <img src="{{ url_for('foto_aula', aula_id=aula.id, nome=foto.nome) }}" loading="{{ 'eager' if loop.first else 'lazy' }}"
+                            alt="Foto do quadro tirada às {{ foto.hora or 'horário desconhecido' }}">
+                        <figcaption>Foto {{ loop.index }} de {{ aula.fotos|length }}{% if foto.hora %} · {{ foto.hora }}{% endif %}</figcaption>
+                    </figure>
+                    {%- endfor %}
+                        </div>
+                    </div>
+                    <div class="photo-carousel-controls" aria-label="Navegação das fotos">
+                        <button type="button" data-photo-prev aria-label="Foto anterior" {% if aula.fotos|length < 2 %}disabled{% endif %}><i class="bi bi-arrow-left" aria-hidden="true"></i></button>
+                        <span data-photo-counter aria-live="polite">1 / {{ aula.fotos|length }}</span>
+                        <button type="button" data-photo-next aria-label="Próxima foto" {% if aula.fotos|length < 2 %}disabled{% endif %}><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                {%- else %}
+                <p class="detail-empty-state"><i class="bi bi-image" aria-hidden="true"></i><span>Nenhuma foto do quadro foi registrada nesta aula.</span></p>
+                {%- endif %}
+            </section>
+            <section id="anotacoes" class="detail-extra detail-section-card" data-aula-id="{{ aula.id }}">
+                <header class="detail-section-heading">
+                    <span class="detail-section-icon" aria-hidden="true"><i class="bi bi-journal-text"></i></span>
+                    <div><p class="detail-section-eyebrow">SEU ESPAÇO DE ESTUDO</p><h2>Anotações</h2><p>Guarde observações e pontos importantes para consultar depois.</p></div>
+                </header>
+                <label for="campo-anotacoes" class="rotulo">Anotações desta aula</label>
+                <textarea id="campo-anotacoes" class="campo-texto" rows="8" maxlength="20000" placeholder="Escreva aqui suas anotações...">{{ aula.anotacoes }}</textarea>
+                <div class="detail-notes-actions">
+                    <span>Suas anotações ficam vinculadas a esta aula.</span>
+                    <button type="button" id="botao-salvar-anotacoes" class="botao-grande"><i class="bi bi-check2" aria-hidden="true"></i> Salvar anotações</button>
+                </div>
+                <p id="status-anotacoes" class="estado" role="status" aria-live="polite"></p>
+            </section>
+            <p><a class="back-link" href="{{ url_for('detalhe_materia', materia_id=aula.materia_id) }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar para {{ aula.disciplina }}</a></p>
+{% endblock %}
+{% block scripts %}  <script src="{{ url_for('static', filename='js/detalhe.js') }}"></script>
+{% endblock %}
