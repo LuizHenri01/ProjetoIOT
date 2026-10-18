@@ -31,3 +31,11 @@ CREATE TABLE IF NOT EXISTS aulas (
     materia_id INTEGER REFERENCES materias(id) ON DELETE CASCADE,
     nome_aula TEXT
 );
+
+CREATE TABLE IF NOT EXISTS notificacoes_push (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    endpoint TEXT NOT NULL UNIQUE,
+    assinatura_json TEXT NOT NULL,
+    criado_em TEXT NOT NULL
+);

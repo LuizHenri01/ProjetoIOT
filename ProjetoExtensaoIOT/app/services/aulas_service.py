@@ -32,12 +32,19 @@ def encerrar_aula(aula_id, usuario_id, horario_fim=None):
     horario_fim = horario_fim or datetime.now().strftime("%H:%M:%S")
     # Os ? protegem contra SQL Injection: nunca monte o SQL com f-string.
     conexao = obter_conexao()
-    conexao.execute(
+    linha = conexao.execute(
+        "SELECT usuario_id, nome_aula, disciplina FROM aulas WHERE id = ? AND usuario_id = ? AND horario_fim IS NULL",
+        (aula_id, usuario_id),
+    ).fetchone()
+    cursor = conexao.execute(
         "UPDATE aulas SET horario_fim = ? WHERE id = ? AND usuario_id = ? AND horario_fim IS NULL",
         (horario_fim, aula_id, usuario_id),
     )
     conexao.commit()
     conexao.close()
+    if linha and cursor.rowcount:
+        from app.services.notificacoes_service import notificar_usuario
+        notificar_usuario(usuario_id, "Aula concluída", f"{linha['nome_aula'] or linha['disciplina']} foi concluída.", "/aulas")
 
 
 def obter_aula_ativa(usuario_id, auto_encerrar=True):
@@ -80,14 +87,21 @@ def encerrar_aulas_vencidas():
         )
         if agora >= limite:
             vencidas.append(aula)
+    encerradas = []
     for aula in vencidas:
-        conexao.execute(
+        cursor = conexao.execute(
             "UPDATE aulas SET horario_fim = ? WHERE id = ? AND usuario_id = ? AND horario_fim IS NULL",
             (aula["horario_fim_previsto"], aula["id"], aula["usuario_id"]),
         )
+        if cursor.rowcount:
+            encerradas.append(aula)
     conexao.commit()
     conexao.close()
-    return len(vencidas)
+    if encerradas:
+        from app.services.notificacoes_service import notificar_usuario
+        for aula in encerradas:
+            notificar_usuario(aula["usuario_id"], "Aula concluída", "A aula foi encerrada no horário programado.", "/aulas")
+    return len(encerradas)
 
 
 def listar_aulas(usuario_id):

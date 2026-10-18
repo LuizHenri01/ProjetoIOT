@@ -270,3 +270,10 @@ def registrar_paginas(app):
     @login_obrigatorio
     def configuracoes():
         return render_template("configuracoes.html")
+
+    @app.route("/sw.js")
+    def service_worker():
+        resposta = send_from_directory(app.static_folder + "/js", "sw.js", mimetype="application/javascript")
+        resposta.headers["Service-Worker-Allowed"] = "/"
+        resposta.headers["Cache-Control"] = "no-cache"
+        return resposta

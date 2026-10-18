@@ -17,6 +17,9 @@ from app.services.fotos_service import (
 from app.services.transcricoes_service import (
     buscar_transcricoes, listar_transcricoes, salvar_transcricao,
 )
+from app.services.notificacoes_service import (
+    chave_publica_vapid, notificar_usuario, remover_assinatura, salvar_assinatura,
+)
 
 TAMANHO_MAXIMO_NOME = 80
 TAMANHO_MAXIMO_ANOTACOES = 20000
@@ -44,6 +47,7 @@ def registrar_api(app):
             caminho = salvar_foto(arquivo, aula["id"])
         except OSError:
             return jsonify({"erro": "Não foi possível gravar a foto. Verifique o espaço disponível."}), 500
+        notificar_usuario(g.usuario["id"], "Foto salva", f"Uma foto foi adicionada à aula {aula.get('nome_aula') or aula['disciplina']}.", "/aulas")
         return jsonify({"status": "ok", "mensagem": "Foto salva com sucesso", "caminho": caminho}), 201
 
     @app.route("/api/aulas/iniciar", methods=["POST"])
@@ -112,6 +116,7 @@ def registrar_api(app):
             materia_id=materia_id,
             nome_aula=nome_aula,
         )
+        notificar_usuario(g.usuario["id"], "Aula iniciada", f"{nome_aula} está em andamento.", "/captura")
         return jsonify({"status": "ok", "aula_id": aula_id}), 201
 
     @app.route("/api/aulas/encerrar", methods=["POST"])
@@ -123,6 +128,28 @@ def registrar_api(app):
 
         encerrar_aula(aula["id"], g.usuario["id"])
         return jsonify({"status": "ok", "mensagem": "Aula encerrada"}), 200
+
+    @app.route("/api/notificacoes/chave", methods=["GET"])
+    @login_obrigatorio
+    def chave_notificacoes_route():
+        try:
+            return jsonify({"chave": chave_publica_vapid()})
+        except Exception:
+            return jsonify({"erro": "Não foi possível configurar as notificações neste servidor."}), 503
+
+    @app.route("/api/notificacoes/inscricao", methods=["POST", "DELETE"])
+    @login_obrigatorio
+    def inscricao_notificacoes_route():
+        dados = request.get_json(silent=True) or {}
+        assinatura = dados.get("subscription") if request.method == "POST" else None
+        if request.method == "POST":
+            if not isinstance(assinatura, dict) or not salvar_assinatura(g.usuario["id"], assinatura):
+                return jsonify({"erro": "Inscrição de notificações inválida."}), 400
+            return jsonify({"status": "ok"}), 201
+        endpoint = dados.get("endpoint", "")
+        if isinstance(endpoint, str):
+            remover_assinatura(g.usuario["id"], endpoint)
+        return jsonify({"status": "ok"})
 
     @app.route("/api/aulas/<int:aula_id>", methods=["DELETE"])
     @login_obrigatorio
